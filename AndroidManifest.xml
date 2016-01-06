@@ -165,7 +165,7 @@
         <provider android:name="com.android.inputmethod.dictionarypack.DictionaryProvider"
                 android:grantUriPermissions="true"
                 android:exported="false"
-                android:authorities="hideous_beast"
+                android:authorities="@string/authority"
                 android:multiprocess="false"
                 android:label="@string/dictionary_provider_name">
         </provider>
