@@ -141,7 +141,7 @@
 
         <receiver android:name="com.android.inputmethod.latin.DictionaryPackInstallBroadcastReceiver" android:exported="false">
             <intent-filter>
-                <action android:name="com.android.inputmethod.dictionarypack.aosp.UNKNOWN_CLIENT" />
+                <action android:name="so.brendan.dictionarypack.UNKNOWN_CLIENT" />
             </intent-filter>
         </receiver>
 
@@ -149,8 +149,8 @@
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
                 <action android:name="android.intent.action.DATE_CHANGED" />
-                <action android:name="com.android.inputmethod.dictionarypack.aosp.UPDATE_NOW" />
-                <action android:name="com.android.inputmethod.dictionarypack.aosp.INIT_AND_UPDATE_NOW" />
+                <action android:name="so.brendan.dictionarypack.UPDATE_NOW" />
+                <action android:name="so.brendan.dictionarypack.INIT_AND_UPDATE_NOW" />
             </intent-filter>
         </receiver>
 
