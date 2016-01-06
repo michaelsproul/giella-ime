@@ -162,7 +162,7 @@
         </receiver>
 
         <!-- Content providers -->
-        <provider android:name="com.android.inputmethod.dictionarypack.DictionaryProvider"
+        <provider android:name=".dictionarypack.DictionaryProvider"
                 android:grantUriPermissions="true"
                 android:exported="false"
                 android:authorities="@string/authority"
