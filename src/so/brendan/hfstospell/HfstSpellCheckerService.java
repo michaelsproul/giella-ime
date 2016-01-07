@@ -16,14 +16,19 @@
 
 package so.brendan.hfstospell;
 
-import android.service.textservice.SpellCheckerService;
+import android.view.textservice.TextInfo;
 import android.view.textservice.SuggestionsInfo;
+import android.service.textservice.SpellCheckerService;
+import android.service.textservice.SpellCheckerService.Session;
+import android.util.Log;
+
+import java.lang.Override;
 
 /**
  * Service for spell checking, using HFST dictionaries.
  */
 public final class HfstSpellCheckerService extends SpellCheckerService {
-    private static final String TAG = AndroidSpellCheckerService.class.getSimpleName();
+    private static final String TAG = HfstSpellCheckerService.class.getSimpleName();
 
     public HfstSpellCheckerService() {
         super();
@@ -37,6 +42,9 @@ public final class HfstSpellCheckerService extends SpellCheckerService {
 
     private class HfstSpellCheckerSession extends Session {
         private HfstSpellCheckerSession() {}
+
+        @Override
+        public void onCreate() {}
 
         @Override
         public SuggestionsInfo onGetSuggestions(TextInfo textInfo, int suggestionsLimit) {
