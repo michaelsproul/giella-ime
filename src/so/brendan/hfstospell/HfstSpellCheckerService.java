@@ -50,6 +50,8 @@ public final class HfstSpellCheckerService extends SpellCheckerService {
 
     private class HfstSpellCheckerSession extends Session {
         private ZHfstOspeller mSpeller;
+        // FIXME: use one of these from somewhere else?
+        private final static String[] EMPTY_ARRAY = {};
 
         private HfstSpellCheckerSession(ZHfstSpeller speller) {
             mSpeller = speller;
@@ -68,7 +70,7 @@ public final class HfstSpellCheckerService extends SpellCheckerService {
 
             // Check if the word is spelled correctly.
             if (mSpeller.spell(word)) {
-                return new SuggestionsInfo(SuggestionsInfo.RESULT_ATTR_IN_THE_DICTIONARY, new String[](0));
+                return new SuggestionsInfo(SuggestionsInfo.RESULT_ATTR_IN_THE_DICTIONARY, EMPTY_ARRAY);
             }
 
             // If the word isn't correct, query the C++ spell checker for suggestions.
