@@ -24,35 +24,66 @@ import android.util.Log;
 
 import java.lang.Override;
 
+import fi.helsinki.hfst.StringWeightPair;
+import fi.helsinki.hfst.StringWeightPairVector;
+import fi.helsinki.hfst.ZHfstOspeller;
+
 /**
  * Service for spell checking, using HFST dictionaries.
  */
 public final class HfstSpellCheckerService extends SpellCheckerService {
     private static final String TAG = HfstSpellCheckerService.class.getSimpleName();
 
+    private ZHfstOspeller mSpeller;
+
     public HfstSpellCheckerService() {
         super();
+        // FIXME: get rid of hardcoded locale here
+        mSpeller = HfstUtils.getSpeller("zz_SJD");
         Log.d(TAG, "SPROUL: just created a spell checker");
     }
 
     @Override
     public Session createSession() {
-        return new HfstSpellCheckerSession();
+        return new HfstSpellCheckerSession(mSpeller);
     }
 
     private class HfstSpellCheckerSession extends Session {
-        private HfstSpellCheckerSession() {}
+        private ZHfstOspeller mSpeller;
 
+        private HfstSpellCheckerSession(ZHfstSpeller speller) {
+            mSpeller = speller;
+        }
+
+        /*
         @Override
         public void onCreate() {}
+        */
 
         @Override
         public SuggestionsInfo onGetSuggestions(TextInfo textInfo, int suggestionsLimit) {
-            Log.d(TAG, "SPROUL: getting suggestions");
-            String[] suggestions = {"HELLO WORLD"};
-            int attributes = SuggestionsInfo.RESULT_ATTR_LOOKS_LIKE_TYPO;
+            String word = textInfo.getText();
 
-            return new SuggestionsInfo(attributes, suggestions);
+            Log.d(TAG, "SPROUL: calling C++ spell checker");
+
+            // Check if the word is spelled correctly.
+            if (mSpeller.spell(word)) {
+                return new SuggestionsInfo(SuggestionsInfo.RESULT_ATTR_IN_THE_DICTIONARY, {});
+            }
+
+            // If the word isn't correct, query the C++ spell checker for suggestions.
+            StringWeightPairVector suggs = mSpeller.suggest(word);
+            ArrayList<String> suggestions = new ArrayList<String>();
+
+            for (int i = 0; i < suggs.size(); i++) {
+                StringWeightPair sugg = suggs.get(i);
+                String suggWord = suggs.getFirst();
+                suggestions.add(suggWord);
+            }
+
+            int attrs = SuggestionsInfo.RESULT_ATTR_HAS_RECOMMENDED_SUGGESTIONS;
+
+            return new SuggestionsInfo(attrs, (String[]) suggestions.toArray());
         }
     }
 }
