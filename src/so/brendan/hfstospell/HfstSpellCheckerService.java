@@ -22,6 +22,7 @@ import android.service.textservice.SpellCheckerService;
 import android.service.textservice.SpellCheckerService.Session;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.lang.Override;
 
 import fi.helsinki.hfst.StringWeightPair;
@@ -50,17 +51,13 @@ public final class HfstSpellCheckerService extends SpellCheckerService {
 
     private class HfstSpellCheckerSession extends Session {
         private ZHfstOspeller mSpeller;
-        // FIXME: use one of these from somewhere else?
-        private final static String[] EMPTY_ARRAY = {};
 
-        private HfstSpellCheckerSession(ZHfstSpeller speller) {
+        private HfstSpellCheckerSession(ZHfstOspeller speller) {
             mSpeller = speller;
         }
 
-        /*
         @Override
         public void onCreate() {}
-        */
 
         @Override
         public SuggestionsInfo onGetSuggestions(TextInfo textInfo, int suggestionsLimit) {
@@ -70,7 +67,7 @@ public final class HfstSpellCheckerService extends SpellCheckerService {
 
             // Check if the word is spelled correctly.
             if (mSpeller.spell(word)) {
-                return new SuggestionsInfo(SuggestionsInfo.RESULT_ATTR_IN_THE_DICTIONARY, EMPTY_ARRAY);
+                return new SuggestionsInfo(SuggestionsInfo.RESULT_ATTR_IN_THE_DICTIONARY, new String[0]);
             }
 
             // If the word isn't correct, query the C++ spell checker for suggestions.
@@ -79,7 +76,7 @@ public final class HfstSpellCheckerService extends SpellCheckerService {
 
             for (int i = 0; i < suggs.size(); i++) {
                 StringWeightPair sugg = suggs.get(i);
-                String suggWord = suggs.getFirst();
+                String suggWord = sugg.getFirst();
                 suggestions.add(suggWord);
             }
 
