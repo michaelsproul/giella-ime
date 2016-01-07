@@ -162,6 +162,7 @@
         </receiver>
 
         <!-- Content providers -->
+        <!--
         <provider android:name="com.android.inputmethod.dictionarypack.DictionaryProvider"
                 android:grantUriPermissions="true"
                 android:exported="false"
@@ -169,7 +170,7 @@
                 android:multiprocess="false"
                 android:label="@string/dictionary_provider_name">
         </provider>
-        <!--
+        -->
         <provider android:name="so.brendan.hfstospell.HfstDictionaryProvider"
             android:grantUriPermissions="true"
             android:exported="false"
@@ -177,6 +178,5 @@
             android:multiprocess="false"
             android:label="@string/dictionary_provider_name">
         </provider>
-        -->
     </application>
 </manifest>

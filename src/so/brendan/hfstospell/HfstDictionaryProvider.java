@@ -118,6 +118,7 @@ public class HfstDictionaryProvider extends ContentProvider {
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        Log.d(TAG, "SPROUL Our shit is being run");
         final String clientId = getClientId(uri);
         final int match = matchUri(uri);
 
