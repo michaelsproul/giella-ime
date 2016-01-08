@@ -63,4 +63,12 @@
             android:label="@string/subtype_generic"
             android:subtypeLocale="zz_SJD"
     />
+    <subtype
+        android:label="@string/subtype_generic"
+        android:subtypeLocale="se"
+    />
+    <subtype
+        android:label="@string/subtype_generic"
+        android:subtypeLocale="not_real"
+    />
 </spell-checker>
