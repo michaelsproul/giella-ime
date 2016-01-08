@@ -40,7 +40,7 @@ final public class HfstUtils {
     }
 
     private static File getSpellerCache() {
-        File spellerCache = File(mCtx.getCacheDir(), "spellers");
+        File spellerCache = new File(mCtx.getCacheDir(), "spellers");
         spellerCache.mkdir();
         return spellerCache;
     }
