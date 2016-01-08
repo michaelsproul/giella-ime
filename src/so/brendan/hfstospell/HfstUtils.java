@@ -40,7 +40,9 @@ final public class HfstUtils {
     }
 
     private static File getSpellerCache() {
-        return new File(mCtx.getCacheDir(), "spellers");
+        File spellerCache = File(mCtx.getCacheDir(), "spellers");
+        spellerCache.mkdir();
+        return spellerCache;
     }
 
     private static File extractSpellerFromAssets(String language) throws IOException {
@@ -90,7 +92,6 @@ final public class HfstUtils {
         File spellerDir = new File(getSpellerCache(), language);
 
         // If pre-cached, reuse.
-        /*
         if (spellerDir.isDirectory()) {
             File acceptor = new File(spellerDir, ACCEPTOR);
             File errmodel = new File(spellerDir, ERRMODEL);
@@ -101,7 +102,6 @@ final public class HfstUtils {
                                                    errmodel.getAbsolutePath()));
             }
         }
-        */
 
         // Otherwise, unzip and rock on
         zhfst = new ZHfstOspeller();
