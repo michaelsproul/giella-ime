@@ -54,7 +54,7 @@ final public class HfstUtils {
         bis.read(buffer);
         bis.close();
 
-        Log.d(TAG, "SPROUL: byte buffer size is: ", buffer.length);
+        Log.d(TAG, "SPROUL: byte buffer size is: " + Integer.toString(buffer.length));
 
         FileOutputStream fos = new FileOutputStream(f);
         fos.write(buffer);
