@@ -551,6 +551,7 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
 
     @Override
     public void onCreate() {
+        Log.d(TAG, "SPROUL LatinIME::onCreate running");
         HfstUtils.init(this);
         Settings.init(this);
         DebugFlags.init(PreferenceManager.getDefaultSharedPreferences(this));
