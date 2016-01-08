@@ -44,12 +44,17 @@ final public class HfstUtils {
     }
 
     private static File extractSpellerFromAssets(String language) throws IOException {
+        Log.d(TAG, "language is " + language);
+        // Open the dictionary asset.
         BufferedInputStream bis = new BufferedInputStream(mCtx.getAssets().open("dicts/" + language + ".zhfst"));
+        // Create a copy of the dictionary in the cache directory.
         File f = new File(mCtx.getCacheDir() + "/" + language + ".zhfst");
 
         byte[] buffer = new byte[bis.available()];
         bis.read(buffer);
         bis.close();
+
+        Log.d(TAG, "SPROUL: byte buffer size is: ", buffer.length);
 
         FileOutputStream fos = new FileOutputStream(f);
         fos.write(buffer);
@@ -81,9 +86,11 @@ final public class HfstUtils {
     @Nullable
     public static ZHfstOspeller getSpeller(@Nonnull String language) {
         ZHfstOspeller zhfst;
+        // Directory for extracted (cached) version of this spell checker.
         File spellerDir = new File(getSpellerCache(), language);
 
         // If pre-cached, reuse.
+        /*
         if (spellerDir.isDirectory()) {
             File acceptor = new File(spellerDir, ACCEPTOR);
             File errmodel = new File(spellerDir, ERRMODEL);
@@ -94,9 +101,9 @@ final public class HfstUtils {
                                                    errmodel.getAbsolutePath()));
             }
         }
+        */
 
         // Otherwise, unzip and rock on
-
         zhfst = new ZHfstOspeller();
         zhfst.setTemporaryDir(getSpellerCache().getAbsolutePath());
 
@@ -117,5 +124,4 @@ final public class HfstUtils {
 
         return configure(zhfst);
     }
-
 }
