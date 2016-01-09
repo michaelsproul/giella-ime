@@ -7,4 +7,4 @@
 	url = https://github.com/libarchive/libarchive.git
 [submodule "vendor/hfst-ospell"]
 	path = vendor/hfst-ospell
-	url = https://github.com/bbqsrc/hfst-ospell
+	url = https://github.com/michaelsproul/hfst-ospell.git
