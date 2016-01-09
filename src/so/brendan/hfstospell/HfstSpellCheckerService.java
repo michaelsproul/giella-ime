@@ -72,7 +72,7 @@ public final class HfstSpellCheckerService extends SpellCheckerService {
 
             // If the word isn't correct, query the C++ spell checker for suggestions.
             StringWeightPairVector suggs = mSpeller.suggest(word);
-            String[] suggestions = new String[suggs.size()];
+            String[] suggestions = new String[(int) suggs.size()]; // dodgy int cast, should be ok.
 
             for (int i = 0; i < suggs.size(); i++) {
                 suggestions[i] = suggs.get(i).getFirst();
