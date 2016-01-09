@@ -72,17 +72,15 @@ public final class HfstSpellCheckerService extends SpellCheckerService {
 
             // If the word isn't correct, query the C++ spell checker for suggestions.
             StringWeightPairVector suggs = mSpeller.suggest(word);
-            ArrayList<String> suggestions = new ArrayList<String>();
+            String[] suggestions = new String[suggs.size()];
 
             for (int i = 0; i < suggs.size(); i++) {
-                StringWeightPair sugg = suggs.get(i);
-                String suggWord = sugg.getFirst();
-                suggestions.add(suggWord);
+                suggestions[i] = suggs.get(i).getFirst();
             }
 
             int attrs = SuggestionsInfo.RESULT_ATTR_HAS_RECOMMENDED_SUGGESTIONS;
 
-            return new SuggestionsInfo(attrs, (String[]) suggestions.toArray());
+            return new SuggestionsInfo(attrs, suggestions);
         }
     }
 }
