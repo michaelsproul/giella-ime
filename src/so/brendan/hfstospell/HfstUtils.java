@@ -116,7 +116,6 @@ final public class HfstUtils {
         }
 
         File tmpPath = new File(zhfst.readZhfst(zhfstFile.getAbsolutePath()));
-
         zhfstFile.delete();
         tmpPath.renameTo(spellerDir);
 
