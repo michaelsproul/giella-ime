@@ -45,22 +45,28 @@ final public class HfstUtils {
         return spellerCache;
     }
 
+    // Copy a dictionary from the assets directory into the cache directory.
+    // Return the absolute path to the copied dictionary, as a string.
     private static File extractSpellerFromAssets(String language) throws IOException {
         Log.d(TAG, "language is " + language);
         // Open the dictionary asset.
         BufferedInputStream bis = new BufferedInputStream(mCtx.getAssets().open("dicts/" + language + ".zhfst"));
-        // Create a copy of the dictionary in the cache directory.
+        // Path for the copy of the dictionary in the cache directory.
         File f = new File(mCtx.getCacheDir() + "/" + language + ".zhfst");
 
+        // Read the asset into a buffer.
         byte[] buffer = new byte[bis.available()];
         bis.read(buffer);
         bis.close();
 
         Log.d(TAG, "SPROUL: byte buffer size is: " + Integer.toString(buffer.length));
 
+        // Write the buffer to the output file.
         FileOutputStream fos = new FileOutputStream(f);
         fos.write(buffer);
         fos.close();
+
+        assert f.isFile();
 
         return f;
     }
@@ -88,7 +94,7 @@ final public class HfstUtils {
     @Nullable
     public static ZHfstOspeller getSpeller(@Nonnull String language) {
         ZHfstOspeller zhfst;
-        // Directory for extracted (cached) version of this spell checker.
+        // Directory path for extracted (cached) version of this spell checker.
         File spellerDir = new File(getSpellerCache(), language);
 
         // If pre-cached, reuse.
@@ -114,8 +120,11 @@ final public class HfstUtils {
             Log.e(TAG, "Could not load " + language + ".zhfst", e);
             return null;
         }
+        String zhfstPath = zhfstFile.getAbsolutePath();
+        Log.d(TAG, "SPROUL, path is: " + zhfstPath);
 
-        File tmpPath = new File(zhfst.readZhfst(zhfstFile.getAbsolutePath()));
+        File tmpPath = new File(zhfst.readZhfst(zhfstPath));
+
         zhfstFile.delete();
         tmpPath.renameTo(spellerDir);
 
