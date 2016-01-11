@@ -21,6 +21,7 @@ import android.view.textservice.SuggestionsInfo;
 import android.service.textservice.SpellCheckerService;
 import android.service.textservice.SpellCheckerService.Session;
 import android.util.Log;
+import android.content.Context;
 
 import java.util.Arrays;
 import java.util.ArrayList;
