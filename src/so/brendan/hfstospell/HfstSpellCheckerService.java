@@ -97,12 +97,7 @@ public final class HfstSpellCheckerService extends SpellCheckerService {
                 suggestions[i] = suggs.get(i).getFirst();
             }
 
-            int attrs;
-            if (suggestions.length > 0) {
-                attrs = SuggestionsInfo.RESULT_ATTR_HAS_RECOMMENDED_SUGGESTIONS;
-            } else {
-                attrs = SuggestionsInfo.RESULT_ATTR_LOOKS_LIKE_TYPO;
-            }
+            int attrs = SuggestionsInfo.RESULT_ATTR_LOOKS_LIKE_TYPO;
 
             Log.d(TAG, "SPROUL suggestions: " + Arrays.toString(suggestions));
             return new SuggestionsInfo(attrs, suggestions);
