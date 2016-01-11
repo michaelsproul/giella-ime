@@ -44,7 +44,7 @@ public final class HfstSpellCheckerService extends SpellCheckerService {
         super();
         Log.d(TAG, "SPROUL: HfstSpellCheckerService constructor running");
 
-        if (this == null) {
+        if (this == null || this.getBaseContext()) {
             Log.e(TAG, "SPROUL why is this null?");
         }
 
