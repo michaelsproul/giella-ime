@@ -45,7 +45,7 @@ public final class HfstSpellCheckerService extends SpellCheckerService {
     }
 
     @Override
-    public onCreate() {
+    public void onCreate() {
         Log.d(TAG, "SPROUL: HfstSpellCheckerService::onCreate() running");
 
         if (this == null || this.getBaseContext() == null) {
