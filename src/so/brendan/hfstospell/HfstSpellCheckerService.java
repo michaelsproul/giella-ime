@@ -29,20 +29,25 @@ import fi.helsinki.hfst.StringWeightPair;
 import fi.helsinki.hfst.StringWeightPairVector;
 import fi.helsinki.hfst.ZHfstOspeller;
 
+import so.brendan.hfstospell.HfstUtils;
+
 /**
  * Service for spell checking, using HFST dictionaries.
  */
 public final class HfstSpellCheckerService extends SpellCheckerService {
     private static final String TAG = HfstSpellCheckerService.class.getSimpleName();
 
+    private HfstUtils mHfstUtils;
     private ZHfstOspeller mSpeller;
 
     public HfstSpellCheckerService() {
         super();
-        HfstUtils.init(this.getBaseContext());
+
+        mHfstUtils = new HfstUtils(getApplicationContext());
 
         // FIXME: get rid of hardcoded locale here
-        mSpeller = HfstUtils.getSpeller("se");
+        mSpeller = mHfstUtils.getSpeller("se");
+
         Log.d(TAG, "SPROUL: just created a spell checker");
     }
 

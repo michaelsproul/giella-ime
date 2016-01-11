@@ -20,6 +20,9 @@ import com.android.inputmethod.latin.utils.DebugLogUtils;
 import java.util.Collection;
 import java.util.Collections;
 
+public class HfstDictionaryProvider {}
+
+/*
 public class HfstDictionaryProvider extends ContentProvider {
     private static final String TAG = HfstDictionaryProvider.class.getSimpleName();
 
@@ -181,3 +184,4 @@ public class HfstDictionaryProvider extends ContentProvider {
         throw new UnsupportedOperationException("Updating dictionary words is not supported");
     }
 }
+*/

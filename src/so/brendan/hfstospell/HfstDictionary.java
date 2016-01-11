@@ -14,12 +14,18 @@ import fi.helsinki.hfst.StringWeightPair;
 import fi.helsinki.hfst.StringWeightPairVector;
 import fi.helsinki.hfst.ZHfstOspeller;
 
+import so.brendan.hfstospell.HfstUtils;
+
+public class HfstDictionary {}
+
+/*
 public class HfstDictionary extends Dictionary {
     private ZHfstOspeller mSpeller;
+    private HfstUtils mHfstUtils;
 
     public HfstDictionary(String dictType, Locale locale) {
         super(dictType, locale);
-
+        mHfstUtils = new HfstUtils(null);
         mSpeller = HfstUtils.getSpeller(locale);
     }
 
@@ -57,3 +63,4 @@ public class HfstDictionary extends Dictionary {
         return mSpeller.spell(word);
     }
 }
+*/
