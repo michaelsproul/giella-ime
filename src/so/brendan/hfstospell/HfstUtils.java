@@ -51,7 +51,7 @@ final public class HfstUtils {
     // Copy a dictionary from the assets directory into the cache directory.
     // Return the absolute path to the copied dictionary, as a string.
     private File extractSpellerFromAssets(String language) throws IOException {
-        Log.d(TAG, "language is " + language);
+        Log.d(TAG, "SPROUL: language is " + language);
         // Open the dictionary asset.
         BufferedInputStream bis = new BufferedInputStream(mCtx.getAssets().open("dicts/" + language + ".zhfst"));
         // Path for the copy of the dictionary in the cache directory.

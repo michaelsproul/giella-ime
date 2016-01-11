@@ -41,9 +41,14 @@ public final class HfstSpellCheckerService extends SpellCheckerService {
     private ZHfstOspeller mSpeller;
 
     public HfstSpellCheckerService() {
+        Log.d(TAG, "SPROUL: HfstSpellCheckerService constructor running");
         super();
 
-        mHfstUtils = new HfstUtils(getApplicationContext());
+        if (this == null) {
+            Log.e(TAG, "SPROUL why is this null?");
+        }
+
+        mHfstUtils = new HfstUtils(this.getBaseContext());
 
         // FIXME: get rid of hardcoded locale here
         mSpeller = mHfstUtils.getSpeller("se");

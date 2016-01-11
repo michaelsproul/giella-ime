@@ -63,7 +63,6 @@ public final class DictionaryPackInstallBroadcastReceiver extends BroadcastRecei
     public void onReceive(Context context, Intent intent) {
         final String action = intent.getAction();
         final PackageManager manager = context.getPackageManager();
-        Log.d(TAG, "SPROUL Hello motherfucking world!");
 
         // We need to reread the dictionary if a new dictionary package is installed.
         if (action.equals(Intent.ACTION_PACKAGE_ADDED)) {

@@ -225,7 +225,6 @@ public final class DictionaryProvider extends ContentProvider {
     @Override
     public Cursor query(final Uri uri, final String[] projection, final String selection,
             final String[] selectionArgs, final String sortOrder) {
-        Log.d(TAG, "SPROUL DictionaryProvider::query()");
         DebugLogUtils.l("Uri =", uri);
         PrivateLog.log("Query : " + uri);
         final String clientId = getClientId(uri);
