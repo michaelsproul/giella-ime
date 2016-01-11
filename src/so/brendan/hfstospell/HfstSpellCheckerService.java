@@ -89,7 +89,7 @@ public final class HfstSpellCheckerService extends SpellCheckerService {
 
             // If the word isn't correct, query the C++ spell checker for suggestions.
             StringWeightPairVector suggs = mSpeller.suggest(word);
-            Log.d(TAG, "SPROUL Word spelled incorrectly: " + word ", num suggestions " + Long.toString(suggs.size()));
+            Log.d(TAG, "SPROUL Word spelled incorrectly: " + word + ", num suggestions " + Long.toString(suggs.size()));
             String[] suggestions = new String[(int) suggs.size()]; // dodgy int cast, should be ok.
 
             for (int i = 0; i < suggs.size(); i++) {
