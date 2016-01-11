@@ -39,8 +39,10 @@ public final class HfstSpellCheckerService extends SpellCheckerService {
 
     public HfstSpellCheckerService() {
         super();
+        HfstUtils.init(this.getBaseContext());
+
         // FIXME: get rid of hardcoded locale here
-        mSpeller = HfstUtils.getSpeller("zz_SJD");
+        mSpeller = HfstUtils.getSpeller("se");
         Log.d(TAG, "SPROUL: just created a spell checker");
     }
 
@@ -78,7 +80,12 @@ public final class HfstSpellCheckerService extends SpellCheckerService {
                 suggestions[i] = suggs.get(i).getFirst();
             }
 
-            int attrs = SuggestionsInfo.RESULT_ATTR_HAS_RECOMMENDED_SUGGESTIONS;
+            int attrs;
+            if (suggestions.length > 0) {
+                attrs = SuggestionsInfo.RESULT_ATTR_HAS_RECOMMENDED_SUGGESTIONS;
+            } else {
+                attrs = SuggestionsInfo.RESULT_ATTR_LOOKS_LIKE_TYPO;
+            }
 
             return new SuggestionsInfo(attrs, suggestions);
         }
