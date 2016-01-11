@@ -42,7 +42,11 @@ public final class HfstSpellCheckerService extends SpellCheckerService {
 
     public HfstSpellCheckerService() {
         super();
-        Log.d(TAG, "SPROUL: HfstSpellCheckerService constructor running");
+    }
+
+    @Override
+    public onCreate() {
+        Log.d(TAG, "SPROUL: HfstSpellCheckerService::onCreate() running");
 
         if (this == null || this.getBaseContext() == null) {
             Log.e(TAG, "SPROUL why is this null?");
