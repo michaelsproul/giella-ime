@@ -38,7 +38,6 @@ import so.brendan.hfstospell.HfstUtils;
 public final class HfstSpellCheckerService extends SpellCheckerService {
     private static final String TAG = HfstSpellCheckerService.class.getSimpleName();
 
-    private HfstUtils mHfstUtils;
     private ZHfstOspeller mSpeller;
 
     public HfstSpellCheckerService() {
@@ -47,16 +46,18 @@ public final class HfstSpellCheckerService extends SpellCheckerService {
 
     @Override
     public void onCreate() {
+        // Note: We do everything in onCreate because that's when this.getBaseContext()
+        // no longer returns null (it returns null in the constructor).
         Log.d(TAG, "SPROUL: HfstSpellCheckerService::onCreate() running");
 
-        if (this == null || this.getBaseContext() == null) {
-            Log.e(TAG, "SPROUL why is this null?");
-        }
+        Context context = this.getBaseContext();
+        assert (context != null);
 
-        mHfstUtils = new HfstUtils(this.getBaseContext());
+        HfstUtils.init(context);
+        HfstUtils.loadNativeLibrary();
 
         // FIXME: get rid of hardcoded locale here
-        mSpeller = mHfstUtils.getSpeller("se");
+        mSpeller = HfstUtils.getSpeller("se");
 
         Log.d(TAG, "SPROUL: just created a spell checker");
     }
@@ -84,14 +85,14 @@ public final class HfstSpellCheckerService extends SpellCheckerService {
 
             // Check if the word is spelled correctly.
             if (mSpeller.spell(word)) {
-                Log.d(TAG, "SPROUL Word spelled correctly: " + word );
+                Log.d(TAG, "SPROUL: Word spelled correctly: " + word );
                 return new SuggestionsInfo(SuggestionsInfo.RESULT_ATTR_IN_THE_DICTIONARY, new String[0]);
             }
 
             // If the word isn't correct, query the C++ spell checker for suggestions.
             StringWeightPairVector suggs = mSpeller.suggest(word);
-            Log.d(TAG, "SPROUL Word spelled incorrectly: " + word + ", num suggestions " + Long.toString(suggs.size()));
-            String[] suggestions = new String[(int) suggs.size()]; // dodgy int cast, should be ok.
+            Log.d(TAG, "SPROUL: Word spelled incorrectly: " + word + ", num suggestions: " + Long.toString(suggs.size()));
+            String[] suggestions = new String[(int) suggs.size()];
 
             for (int i = 0; i < suggs.size(); i++) {
                 suggestions[i] = suggs.get(i).getFirst();
@@ -99,7 +100,7 @@ public final class HfstSpellCheckerService extends SpellCheckerService {
 
             int attrs = SuggestionsInfo.RESULT_ATTR_LOOKS_LIKE_TYPO;
 
-            Log.d(TAG, "SPROUL suggestions: " + Arrays.toString(suggestions));
+            Log.d(TAG, "SPROUL: suggestions: " + Arrays.toString(suggestions));
             return new SuggestionsInfo(attrs, suggestions);
         }
     }

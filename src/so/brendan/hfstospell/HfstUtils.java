@@ -16,14 +16,13 @@ import fi.helsinki.hfst.ZHfstOspeller;
 
 final public class HfstUtils {
     private static final String TAG = HfstUtils.class.getSimpleName();
+
+    private HfstUtils() {}
+
+    private static Context mCtx;
+
     private static final String ACCEPTOR = "acceptor.default.hfst";
     private static final String ERRMODEL = "errmodel.default.hfst";
-
-    private Context mCtx;
-
-    public HfstUtils(Context ctx) {
-        mCtx = ctx;
-    }
 
     static {
         System.loadLibrary("lzma");
@@ -32,17 +31,15 @@ final public class HfstUtils {
         System.loadLibrary("hfstospell");
     }
 
-    /*
     public static void init(Context ctx) {
         mCtx = ctx;
     }
-    */
 
     public static void loadNativeLibrary() {
         // Ensures the static initializer is called
     }
 
-    private File getSpellerCache() {
+    private static File getSpellerCache() {
         File spellerCache = new File(mCtx.getCacheDir(), "spellers");
         spellerCache.mkdir();
         return spellerCache;
@@ -50,8 +47,8 @@ final public class HfstUtils {
 
     // Copy a dictionary from the assets directory into the cache directory.
     // Return the absolute path to the copied dictionary, as a string.
-    private File extractSpellerFromAssets(String language) throws IOException {
-        Log.d(TAG, "SPROUL: language is " + language);
+    private static File extractSpellerFromAssets(String language) throws IOException {
+        Log.d(TAG, "language is " + language);
         // Open the dictionary asset.
         BufferedInputStream bis = new BufferedInputStream(mCtx.getAssets().open("dicts/" + language + ".zhfst"));
         // Path for the copy of the dictionary in the cache directory.
@@ -74,7 +71,7 @@ final public class HfstUtils {
         return f;
     }
 
-    public boolean spellerExists(String language) {
+    public static boolean spellerExists(String language) {
         try {
             mCtx.getAssets().open("dicts/" + language + ".zhfst").close();
             return true;
@@ -90,12 +87,12 @@ final public class HfstUtils {
     }
 
     @Nullable
-    public ZHfstOspeller getSpeller(@Nonnull Locale locale) {
+    public static ZHfstOspeller getSpeller(@Nonnull Locale locale) {
         return getSpeller(locale.getLanguage());
     }
 
     @Nullable
-    public ZHfstOspeller getSpeller(@Nonnull String language) {
+    public static ZHfstOspeller getSpeller(@Nonnull String language) {
         ZHfstOspeller zhfst;
         // Directory path for extracted (cached) version of this spell checker.
         File spellerDir = new File(getSpellerCache(), language);
