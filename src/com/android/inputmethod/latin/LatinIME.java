@@ -551,7 +551,6 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
 
     @Override
     public void onCreate() {
-        HfstUtils.init(this);
         Settings.init(this);
         DebugFlags.init(PreferenceManager.getDefaultSharedPreferences(this));
         RichInputMethodManager.init(this);

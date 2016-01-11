@@ -7,30 +7,46 @@ import com.android.inputmethod.latin.SuggestedWords.SuggestedWordInfo;
 import com.android.inputmethod.latin.common.ComposedData;
 import com.android.inputmethod.latin.settings.SettingsValuesForSuggestion;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Locale;
+
+import android.content.Context;
 
 import fi.helsinki.hfst.StringWeightPair;
 import fi.helsinki.hfst.StringWeightPairVector;
 import fi.helsinki.hfst.ZHfstOspeller;
 
-public class HfstDictionary extends Dictionary {
-    private ZHfstOspeller mSpeller;
+import so.brendan.hfstospell.SpellerWrapper;
 
-    public HfstDictionary(String dictType, Locale locale) {
+public class HfstDictionary extends Dictionary {
+
+    public static final String TAG = HfstDictionary.class.getSimpleName();
+
+    private SpellerWrapper mSpeller;
+
+    public HfstDictionary(Context context, String dictType, Locale locale) {
         super(dictType, locale);
 
-        mSpeller = HfstUtils.getSpeller(locale);
+        mSpeller = new SpellerWrapper(context, locale.toString());
     }
 
-    public HfstDictionary(Locale locale) {
-        this(Dictionary.TYPE_MAIN, locale);
+    public HfstDictionary(Context context, Locale locale) {
+        this(context, Dictionary.TYPE_MAIN, locale);
     }
 
     protected ArrayList<SuggestedWordInfo> getSuggestions(ComposedData composedData,
                                                           NgramContext ngramContext) {
-        StringWeightPairVector suggs = mSpeller.suggest(composedData.mTypedWord);
         ArrayList<SuggestedWordInfo> out = new ArrayList<>();
+
+        ZHfstOspeller speller = mSpeller.getSpeller();
+        if (speller == null) {
+            Log.d(TAG, "Dictionary waiting to be initialised");
+            return out;
+        }
+
+        StringWeightPairVector suggs = speller.suggest(composedData.mTypedWord);
 
         for (int i = 0; i < suggs.size(); ++i) {
             StringWeightPair sugg = suggs.get(i);
@@ -54,6 +70,11 @@ public class HfstDictionary extends Dictionary {
 
     @Override
     public boolean isInDictionary(String word) {
-        return mSpeller.spell(word);
+        ZHfstOspeller speller = mSpeller.getSpeller();
+        if (speller == null) {
+            return true;
+        } else {
+            return speller.spell(word);
+        }
     }
 }

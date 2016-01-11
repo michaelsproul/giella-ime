@@ -49,7 +49,9 @@
             <meta-data android:name="android.view.im" android:resource="@xml/method" />
         </service>
 
-        <service android:name="so.brendan.hfstospell.HfstSpellCheckerService"
+        <!-- Original spell checker service -->
+        <!--
+        <service android:name=".spellcheck.AndroidSpellCheckerService"
                  android:label="@string/spell_checker_service_name"
                  android:permission="android.permission.BIND_TEXT_SERVICE">
             <intent-filter>
@@ -57,6 +59,22 @@
             </intent-filter>
             <meta-data android:name="android.view.textservice.scs"
                     android:resource="@xml/spellchecker" />
+        </service>
+        -->
+
+        <!-- HFST spell checker service -->
+        <service android:name="so.brendan.hfstospell.HfstSpellCheckerService"
+            android:label="Michael and Brendan's awesome shit"
+            android:permission="android.permission.BIND_TEXT_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.textservice.SpellCheckerService" />
+            </intent-filter>
+            <meta-data android:name="android.view.textservice.scs"
+                android:resource="@xml/spellchecker_hfst" />
+        </service>
+
+        <!-- HFST update/installer service -->
+        <service android:name="so.brendan.hfstospell.SpellerService">
         </service>
 
         <!--service android:name="com.android.inputmethod.dictionarypack.DictionaryService"
@@ -141,7 +159,7 @@
 
         <!--receiver android:name="com.android.inputmethod.latin.DictionaryPackInstallBroadcastReceiver" android:exported="false">
             <intent-filter>
-                <action android:name="com.android.inputmethod.dictionarypack.aosp.UNKNOWN_CLIENT" />
+                <action android:name="so.brendan.dictionarypack.UNKNOWN_CLIENT" />
             </intent-filter>
         </receiver>
 
@@ -149,8 +167,8 @@
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
                 <action android:name="android.intent.action.DATE_CHANGED" />
-                <action android:name="com.android.inputmethod.dictionarypack.aosp.UPDATE_NOW" />
-                <action android:name="com.android.inputmethod.dictionarypack.aosp.INIT_AND_UPDATE_NOW" />
+                <action android:name="so.brendan.dictionarypack.UPDATE_NOW" />
+                <action android:name="so.brendan.dictionarypack.INIT_AND_UPDATE_NOW" />
             </intent-filter>
         </receiver-->
 

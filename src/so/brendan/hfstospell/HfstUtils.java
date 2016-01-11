@@ -1,13 +1,20 @@
 package so.brendan.hfstospell;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
 import android.util.Log;
 
-import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.channels.Channel;
+import java.nio.channels.FileChannel;
+import java.nio.channels.Channels;
 import java.util.Locale;
+import java.io.BufferedInputStream;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -18,9 +25,6 @@ import fi.helsinki.hfst.ZHfstOspeller;
 
 final public class HfstUtils {
     private static final String TAG = HfstUtils.class.getSimpleName();
-
-    private HfstUtils() {}
-
     private static Context mCtx;
 
     private static final String ACCEPTOR = "acceptor.default.hfst";
@@ -32,6 +36,8 @@ final public class HfstUtils {
         System.loadLibrary("stlport_shared");
         System.loadLibrary("hfstospell");
     }
+
+    private HfstUtils() {}
 
     public static void init(Context ctx) {
         mCtx = ctx;
@@ -55,30 +61,36 @@ final public class HfstUtils {
         return new File(mCtx.getFilesDir(), "spellers");
     }
 
-    private static File extractSpellerFromAssets(String language) throws IOException {
-        BufferedInputStream bis = new BufferedInputStream(mCtx.getAssets().open("dicts/" + language + ".zhfst"));
-        File f = new File(mCtx.getCacheDir() + "/" + language + ".zhfst");
-
-        byte[] buffer = new byte[bis.available()];
-        bis.read(buffer);
-        bis.close();
-
-        FileOutputStream fos = new FileOutputStream(f);
-        fos.write(buffer);
-        fos.close();
-
-        return f;
+    public static boolean isBundled(String locale) {
+        switch (locale) {
+            case "se":
+            case "zz_SJD":
+                return true;
+            default:
+                return false;
+        }
     }
 
-    private static ZHfstOspeller configure(ZHfstOspeller s) {
+    public static ZHfstOspeller configure(ZHfstOspeller s) {
         s.setQueueLimit(3);
         s.setWeightLimit(50);
         return s;
     }
 
-    @Nullable
-    public static ZHfstOspeller getSpeller(@Nonnull Locale locale) {
-        return getSpeller(locale.getLanguage());
+    public static String metadataFilename(String locale) {
+        return locale + "_metadata.json";
+    }
+
+    public static String dictionaryFilename(String locale) {
+        return locale + ".zhfst";
+    }
+
+    public static File dictionaryFile(String locale) {
+        return mCtx.getFileStreamPath(dictionaryFilename(locale));
+    }
+
+    public static File metadataFile(String locale) {
+        return mCtx.getFileStreamPath(metadataFilename(locale));
     }
 
     @Nullable
@@ -102,13 +114,15 @@ final public class HfstUtils {
         zhfst = new ZHfstOspeller();
         zhfst.setTemporaryDir(mCtx.getCacheDir().getAbsolutePath());
 
-        File zhfstFile;
+        File zhfstFile = new File("wtf");
+        /*
         try {
-            zhfstFile = extractSpellerFromAssets(language);
+            zhfstFile = new File("aseafasd");
         } catch (IOException e) {
             Log.e(TAG, "Could not load " + language + ".zhfst", e);
             return null;
         }
+        */
 
         File tmpPath = new File(zhfst.readZhfst(zhfstFile.getAbsolutePath()));
         Log.w(TAG, "tmpPath: " + tmpPath);
@@ -119,10 +133,28 @@ final public class HfstUtils {
             return null;
         }
 
-        Log.i(TAG, "Newly created cached language " + language);
-
         // Re-run to get cached version.
         zhfst.delete();
         return getSpeller(language);
+    }
+
+    public static InputStream bundledDictionary(String locale) throws IOException {
+        return mCtx.getAssets().open("dicts/" + dictionaryFilename(locale));
+    }
+
+    public static InputStream bundledMetadata(String locale) throws IOException {
+        return mCtx.getAssets().open("dicts/" + metadataFilename(locale));
+    }
+
+    /// XXX: There isn't a better way to do this with Android.
+    /// Can't use java.nio.file.Files, or AssetManager.openFd (because of compressed assets).
+    public static void copyAssetToFile(InputStream src, File dest) throws IOException {
+        BufferedInputStream bis = new BufferedInputStream(src);
+        byte[] buffer = new byte[bis.available()];
+        bis.read(buffer);
+        bis.close();
+        FileOutputStream fos = new FileOutputStream(dest);
+        fos.write(buffer);
+        fos.close();
     }
 }

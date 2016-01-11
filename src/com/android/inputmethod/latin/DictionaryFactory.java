@@ -28,6 +28,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Locale;
 
+import so.brendan.hfstospell.HfstUtils;
+import so.brendan.hfstospell.HfstDictionary;
+
 /**
  * Factory for dictionary instances.
  */
@@ -52,6 +55,13 @@ public final class DictionaryFactory {
         }
 
         final LinkedList<Dictionary> dictList = new LinkedList<>();
+
+        // Use an HFST dictionary if one exists for this locale.
+        if (HfstUtils.isBundled(locale.toString())) {
+            Log.d(TAG, "Using an HFST dictionary");
+            dictList.add(new HfstDictionary(context, locale));
+        }
+
         final ArrayList<AssetFileAddress> assetFileList =
                 BinaryDictionaryGetter.getDictionaryFiles(locale, context, true);
         if (null != assetFileList) {

@@ -19,12 +19,20 @@ package so.brendan.hfstospell;
 import android.view.textservice.TextInfo;
 import android.view.textservice.SuggestionsInfo;
 import android.service.textservice.SpellCheckerService;
+import android.service.textservice.SpellCheckerService.Session;
 import android.util.Log;
+import android.content.Context;
 
+import java.lang.NullPointerException;
+import java.util.Arrays;
+import java.util.ArrayList;
 import java.lang.Override;
 
+import fi.helsinki.hfst.StringWeightPair;
 import fi.helsinki.hfst.StringWeightPairVector;
 import fi.helsinki.hfst.ZHfstOspeller;
+
+import so.brendan.hfstospell.SpellerWrapper;
 
 /**
  * Service for spell checking, using HFST dictionaries.
@@ -32,6 +40,7 @@ import fi.helsinki.hfst.ZHfstOspeller;
 public final class HfstSpellCheckerService extends SpellCheckerService {
     private static final String TAG = HfstSpellCheckerService.class.getSimpleName();
 
+    private SpellerWrapper mSpeller;
 
     public HfstSpellCheckerService() {
         super();
@@ -43,34 +52,54 @@ public final class HfstSpellCheckerService extends SpellCheckerService {
 
     @Override
     public void onCreate() {
+        Log.d(TAG, "SPROUL: HfstSpellCheckerService::onCreate() running");
+
         HfstUtils.init(this);
+
+        // FIXME: get rid of hardcoded locale here
+        mSpeller = new SpellerWrapper(this, "se");
+
+        Log.d(TAG, "SPROUL: just created a spell checker");
     }
 
     @Override
     public Session createSession() {
-        return new HfstSpellCheckerSession();
+        return new HfstSpellCheckerSession(mSpeller);
     }
 
     private class HfstSpellCheckerSession extends Session {
-        private ZHfstOspeller mSpeller;
+        private final SpellerWrapper mSpeller;
 
-        @Override
-        public void onCreate() {
-            mSpeller = HfstUtils.getSpeller(getLocale());
+        private HfstSpellCheckerSession(SpellerWrapper speller) {
+            mSpeller = speller;
         }
 
         @Override
+        public void onCreate() {}
+
+        @Override
         public SuggestionsInfo onGetSuggestions(TextInfo textInfo, int suggestionsLimit) {
+            // If the speller isn't ready, return an empty list and an OK message.
+            ZHfstOspeller speller = mSpeller.getSpeller();
+            if (speller == null) {
+                String[] empty = new String[0];
+                return new SuggestionsInfo(SuggestionsInfo.RESULT_ATTR_IN_THE_DICTIONARY, empty);
+            }
+
             // If the speller IS ready, do the proper thing.
             String word = textInfo.getText();
 
+            Log.d(TAG, "SPROUL: calling C++ spell checker");
+
             // Check if the word is spelled correctly.
-            if (mSpeller.spell(word)) {
+            if (speller.spell(word)) {
+                Log.d(TAG, "SPROUL: Word spelled correctly: " + word );
                 return new SuggestionsInfo(SuggestionsInfo.RESULT_ATTR_IN_THE_DICTIONARY, new String[0]);
             }
 
             // If the word isn't correct, query the C++ spell checker for suggestions.
-            StringWeightPairVector suggs = mSpeller.suggest(word);
+            StringWeightPairVector suggs = speller.suggest(word);
+            Log.d(TAG, "SPROUL: Word spelled incorrectly: " + word + ", num suggestions: " + Long.toString(suggs.size()));
             String[] suggestions = new String[(int) suggs.size()];
 
             for (int i = 0; i < suggs.size(); i++) {
@@ -79,6 +108,7 @@ public final class HfstSpellCheckerService extends SpellCheckerService {
 
             int attrs = SuggestionsInfo.RESULT_ATTR_LOOKS_LIKE_TYPO;
 
+            Log.d(TAG, "SPROUL: suggestions: " + Arrays.toString(suggestions));
             return new SuggestionsInfo(attrs, suggestions);
         }
     }
