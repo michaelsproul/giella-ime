@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Locale;
 
-import so.brendan.hfstospell;
+import so.brendan.hfstospell.HfstDictionary;
 
 /**
  * Factory for dictionary instances.
