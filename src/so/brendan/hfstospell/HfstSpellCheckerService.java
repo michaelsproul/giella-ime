@@ -23,6 +23,7 @@ import android.service.textservice.SpellCheckerService.Session;
 import android.util.Log;
 import android.content.Context;
 
+import java.lang.NullPointerException;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.lang.Override;
@@ -45,17 +46,15 @@ public final class HfstSpellCheckerService extends SpellCheckerService {
         super();
     }
 
+    static {
+        HfstUtils.loadNativeLibrary();
+    }
+
     @Override
     public void onCreate() {
-        // Note: We do everything in onCreate because that's when this.getBaseContext()
-        // no longer returns null (it returns null in the constructor).
         Log.d(TAG, "SPROUL: HfstSpellCheckerService::onCreate() running");
 
-        Context context = this.getBaseContext();
-        assert (context != null);
-
-        HfstUtils.init(context);
-        HfstUtils.loadNativeLibrary();
+        HfstUtils.init(this);
 
         // FIXME: get rid of hardcoded locale here
         mSpeller = HfstUtils.getSpeller("se");
@@ -69,7 +68,7 @@ public final class HfstSpellCheckerService extends SpellCheckerService {
     }
 
     private class HfstSpellCheckerSession extends Session {
-        private ZHfstOspeller mSpeller;
+        private final ZHfstOspeller mSpeller;
 
         private HfstSpellCheckerSession(ZHfstOspeller speller) {
             mSpeller = speller;
