@@ -1,5 +1,5 @@
 {
-  "archs": ["x86"],
+  "archs": ["x86", "arm"],
   "targets": [
     {
       "path": "xz",
