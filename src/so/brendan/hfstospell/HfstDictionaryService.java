@@ -2,6 +2,7 @@ import java.lang.Override;
 
 import android.app.Service;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
@@ -46,5 +47,5 @@ class HfstDictionaryService extends Service {
     }
 
     @Override
-    public void onBind() {}
+    public void onBind(Intent i) {}
 }
