@@ -1,5 +1,6 @@
 import java.lang.Override;
 
+import android.app.Service;
 import android.content.Context;
 import android.util.Log;
 
@@ -27,7 +28,7 @@ class HfstDictionaryService extends Service {
 
         // Asset stream.
         BufferedInputStream assetStream =
-                new BufferedInputStream(mCtx.getAssets().open("dicts/" + language + ".zhfst"));
+                new BufferedInputStream(mCtx.getAssets().open("dicts/" + "se" + ".zhfst"));
 
         // Read the asset into a buffer.
         byte[] buffer = new byte[assetStream.available()];
@@ -37,9 +38,9 @@ class HfstDictionaryService extends Service {
         Log.d(TAG, "SPROUL: byte buffer size is: " + Integer.toString(buffer.length));
 
         // Write the buffer to the output file.
-        FileOutputStream fileStream = mCtx.openFileOutput(HfstUtils.dictionaryName(langauge), Context.MODE_PRIVATE);
-        fos.write(buffer);
-        fos.close();
+        FileOutputStream fileStream = mCtx.openFileOutput(HfstUtils.dictionaryName("se"), Context.MODE_PRIVATE);
+        fileStream.write(buffer);
+        fileStream.close();
 
         Log.d(TAG, "SPROUL: created the zhfst file in the app files directory");
     }

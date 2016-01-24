@@ -46,10 +46,9 @@ final public class HfstUtils {
         return locale + ".zhfst";
     }
 
-    public static String dictionaryPath(String locale) {
+    public static File dictionaryPath(String locale) {
         return mCtx.getFileStreamPath(dictionaryFilename(locale));
     }
-
 
     /*
     private static File getSpellerCache() {
