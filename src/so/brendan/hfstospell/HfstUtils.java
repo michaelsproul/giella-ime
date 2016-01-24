@@ -139,7 +139,7 @@ final public class HfstUtils {
         // zhfst.setTemporaryDir(getSpellerCache().getAbsolutePath());
 
         File zhfstFile = dictionaryPath(language);
-        Log.d(TAG, "SPROUL, path is: " + zhfstPath);
+        Log.d(TAG, "SPROUL, path is: " + zhfstFile.getAbsolutePath());
 
         if (!zhfstFile.exists()) {
             Log.e(TAG, "SPROUL: zhfst file doesn't exist");
