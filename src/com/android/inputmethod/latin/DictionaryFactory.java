@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Locale;
 
+import so.brendan.hfstospell.HfstUtils;
 import so.brendan.hfstospell.HfstDictionary;
 
 /**
@@ -54,15 +55,20 @@ public final class DictionaryFactory {
         }
 
         final LinkedList<Dictionary> dictList = new LinkedList<>();
-        dictList.add(new HfstDictionary(locale));
-        /*
+
+        // Use an HFST dictionary if one exists for this locale.
+        if (HfstUtils.compatibleWithLocale(locale)) {
+            Log.d(TAG, "SPROUL: using an HFST dictionary");
+            dictList.add(new HfstDictionary(locale));
+        }
+
         final ArrayList<AssetFileAddress> assetFileList =
                 BinaryDictionaryGetter.getDictionaryFiles(locale, context, true);
         if (null != assetFileList) {
             for (final AssetFileAddress f : assetFileList) {
                 final ReadOnlyBinaryDictionary readOnlyBinaryDictionary =
                         new ReadOnlyBinaryDictionary(f.mFilename, f.mOffset, f.mLength,
-                                false useFullEditDistance, locale, Dictionary.TYPE_MAIN);
+                                false /* useFullEditDistance */, locale, Dictionary.TYPE_MAIN);
                 if (readOnlyBinaryDictionary.isValidDictionary()) {
                     dictList.add(readOnlyBinaryDictionary);
                 } else {
@@ -72,7 +78,6 @@ public final class DictionaryFactory {
                 }
             }
         }
-        */
 
         // If the list is empty, that means we should not use any dictionary (for example, the user
         // explicitly disabled the main dictionary), so the following is okay. dictList is never

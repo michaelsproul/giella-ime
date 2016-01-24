@@ -16,9 +16,6 @@ import fi.helsinki.hfst.ZHfstOspeller;
 
 final public class HfstUtils {
     private static final String TAG = HfstUtils.class.getSimpleName();
-
-    private HfstUtils() {}
-
     private static Context mCtx;
 
     private static final String ACCEPTOR = "acceptor.default.hfst";
@@ -31,6 +28,8 @@ final public class HfstUtils {
         System.loadLibrary("hfstospell");
     }
 
+    private HfstUtils() {}
+
     public static void init(Context ctx) {
         mCtx = ctx;
     }
@@ -39,11 +38,26 @@ final public class HfstUtils {
         // Ensures the static initializer is called
     }
 
+    public static String metadataFilename(String locale) {
+        return locale + ".json";
+    }
+
+    public static String dictionaryFilename(String locale) {
+        return locale + ".zhfst";
+    }
+
+    public static String dictionaryPath(String locale) {
+        return mCtx.getFileStreamPath(dictionaryFilename(locale));
+    }
+
+
+    /*
     private static File getSpellerCache() {
         File spellerCache = new File(mCtx.getCacheDir(), "spellers");
         spellerCache.mkdir();
         return spellerCache;
     }
+    */
 
     // Copy a dictionary from the assets directory into the cache directory.
     // Return the absolute path to the copied dictionary, as a string.
@@ -80,6 +94,17 @@ final public class HfstUtils {
         }
     }
 
+    // FIXME: We could do better than this by integrating with the Context, settings and junk.
+    public static boolean compatibleWithLocale(String locale) {
+        switch (locale) {
+            case "se":
+            case "zz_SJD":
+                return true;
+            default:
+                return false;
+        }
+    }
+
     private static ZHfstOspeller configure(ZHfstOspeller s) {
         s.setQueueLimit(3);
         s.setWeightLimit(50);
@@ -93,9 +118,8 @@ final public class HfstUtils {
 
     @Nullable
     public static ZHfstOspeller getSpeller(@Nonnull String language) {
-        ZHfstOspeller zhfst;
-        // Directory path for extracted (cached) version of this spell checker.
-        File spellerDir = new File(getSpellerCache(), language);
+        // Directory path for the extracted version of this spell checker.
+        //File spellerDir = new File(getSpellerCache(), language);
 
         // If pre-cached, reuse.
         /*
@@ -111,26 +135,26 @@ final public class HfstUtils {
         }
         */
 
-        // Otherwise, unzip and rock on
-        zhfst = new ZHfstOspeller();
-        zhfst.setTemporaryDir(getSpellerCache().getAbsolutePath());
+        // Sans caching.
+        ZHfstOspeller zhfst = new ZHfstOspeller();
+        // zhfst.setTemporaryDir(getSpellerCache().getAbsolutePath());
 
-        File zhfstFile;
-        try {
-            zhfstFile = extractSpellerFromAssets(language);
-        } catch (IOException e) {
-            Log.e(TAG, "Could not load " + language + ".zhfst", e);
+        String zhfstPath = dictionaryPath(language);
+        Log.d(TAG, "SPROUL, path is: " + zhfstPath);
+
+        // Check that the file exists.
+        File f = new File(zhfstPath);
+        if (!f.exists()) {
+            Log.e(TAG, "SPROUL: zhfst file doesn't exist");
             return null;
         }
-        String zhfstPath = zhfstFile.getAbsolutePath();
-        Log.d(TAG, "SPROUL, path is: " + zhfstPath);
 
         File tmpPath = new File(zhfst.readZhfst(zhfstPath));
 
-        zhfstFile.delete();
-        tmpPath.renameTo(spellerDir);
+        // zhfstFile.delete();
+        // tmpPath.renameTo(spellerDir);
 
-        Log.i(TAG, "Newly created cached language " + language);
+        // Log.i(TAG, "Newly created cached language " + language);
 
         return configure(zhfst);
     }

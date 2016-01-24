@@ -73,6 +73,11 @@
                 android:resource="@xml/spellchecker_hfst" />
         </service>
 
+        <!-- HFST update service -->
+        <service android:name="so.brendan.hfstospell.HfstDictionaryService"
+            android:label="Bullshit">
+        </service>
+
         <service android:name="com.android.inputmethod.dictionarypack.DictionaryService"
                 android:label="@string/dictionary_service_name">
         </service>
