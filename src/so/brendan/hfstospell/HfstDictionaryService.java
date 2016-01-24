@@ -28,21 +28,25 @@ class HfstDictionaryService extends Service {
 
         Log.d(TAG, "SPROUL: Copying zhfst file from assets to files");
 
-        // Asset stream.
-        BufferedInputStream assetStream =
-                new BufferedInputStream(mCtx.getAssets().open("dicts/" + "se" + ".zhfst"));
+        try {
+            // Asset stream.
+            BufferedInputStream assetStream =
+                    new BufferedInputStream(mCtx.getAssets().open("dicts/" + "se" + ".zhfst"));
 
-        // Read the asset into a buffer.
-        byte[] buffer = new byte[assetStream.available()];
-        assetStream.read(buffer);
-        assetStream.close();
+            // Read the asset into a buffer.
+            byte[] buffer = new byte[assetStream.available()];
+            assetStream.read(buffer);
+            assetStream.close();
 
-        Log.d(TAG, "SPROUL: byte buffer size is: " + Integer.toString(buffer.length));
+            Log.d(TAG, "SPROUL: byte buffer size is: " + Integer.toString(buffer.length));
 
-        // Write the buffer to the output file.
-        FileOutputStream fileStream = mCtx.openFileOutput(HfstUtils.dictionaryFilename("se"), Context.MODE_PRIVATE);
-        fileStream.write(buffer);
-        fileStream.close();
+            // Write the buffer to the output file.
+            FileOutputStream fileStream = mCtx.openFileOutput(HfstUtils.dictionaryFilename("se"), Context.MODE_PRIVATE);
+            fileStream.write(buffer);
+            fileStream.close();
+        } catch (Exception e) {
+            Log.e(TAG, "Fuck! " + e.getMessage());
+        }
 
         Log.d(TAG, "SPROUL: created the zhfst file in the app files directory");
     }
