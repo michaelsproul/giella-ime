@@ -57,7 +57,7 @@ public final class DictionaryFactory {
         final LinkedList<Dictionary> dictList = new LinkedList<>();
 
         // Use an HFST dictionary if one exists for this locale.
-        if (HfstUtils.compatibleWithLocale(locale.toString())) {
+        if (HfstUtils.isBundled(locale.toString())) {
             Log.d(TAG, "SPROUL: using an HFST dictionary");
             dictList.add(new HfstDictionary(locale));
         }

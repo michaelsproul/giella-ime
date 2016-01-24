@@ -1,10 +1,13 @@
+package so.brendan.hfstospell;
+
 import java.lang.Override;
 
-import android.app.Service;
+import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.os.IBinder;
+import android.os.Bundle;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -17,40 +20,41 @@ import javax.annotation.Nullable;
 
 import so.brendan.hfstospell.HfstUtils;
 
-class HfstDictionaryService extends Service {
+class HfstDictionaryService extends IntentService {
     private static final String TAG = HfstDictionaryService.class.getSimpleName();
     private Context mCtx;
 
+    // Intent actions that we understand.
+    public static final String PACKAGE_NAME = "so.brendan.hfstospell";
+    public static final String ACTION_UPDATE_DICT = PACKAGE_NAME + ".UPDATE_DICT";
+
+    // Key name for passing the locale in an intent.
+    public static final String EXTRA_LOCALE_KEY = PACKAGE_NAME + ".Locale";
+
     @Override
     public void onCreate() {
+        super.onCreate();
         mCtx = this;
-        HfstUtils.init(mCtx);
-
-        Log.d(TAG, "SPROUL: Copying zhfst file from assets to files");
-
-        try {
-            // Asset stream.
-            BufferedInputStream assetStream =
-                    new BufferedInputStream(mCtx.getAssets().open("dicts/" + "se" + ".zhfst"));
-
-            // Read the asset into a buffer.
-            byte[] buffer = new byte[assetStream.available()];
-            assetStream.read(buffer);
-            assetStream.close();
-
-            Log.d(TAG, "SPROUL: byte buffer size is: " + Integer.toString(buffer.length));
-
-            // Write the buffer to the output file.
-            FileOutputStream fileStream = mCtx.openFileOutput(HfstUtils.dictionaryFilename("se"), Context.MODE_PRIVATE);
-            fileStream.write(buffer);
-            fileStream.close();
-        } catch (Exception e) {
-            Log.e(TAG, "Fuck! " + e.getMessage());
-        }
-
-        Log.d(TAG, "SPROUL: created the zhfst file in the app files directory");
     }
 
     @Override
-    public IBinder onBind(Intent i) { return null; }
+    protected void onHandleIntent (Intent intent) {
+        Log.d(TAG, "SPROUL: received an intent");
+        switch (intent.getAction()) {
+            case ACTION_UPDATE_DICT:
+                handleUpdateDict(intent);
+            default:
+                return;
+        }
+    }
+
+    private void handleUpdateDict(Intent intent) {
+        Bundle intentExtras = intent.getExtras();
+        String locale = intentExtras == null ? null : intentExtras.getString(EXTRA_LOCALE_KEY);
+        if (locale == null) {
+            Log.e(TAG, "No locale in dict update request");
+        }
+
+        Log.d(TAG, "Hello! Locale is: " + locale);
+    }
 }

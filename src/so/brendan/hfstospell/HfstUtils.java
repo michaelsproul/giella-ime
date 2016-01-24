@@ -1,6 +1,7 @@
 package so.brendan.hfstospell;
 
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
@@ -9,10 +10,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Locale;
 
+import java.nio.channels.FileChannel;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import fi.helsinki.hfst.ZHfstOspeller;
+
+import so.brendan.hfstospell.HfstDictionaryService;
 
 final public class HfstUtils {
     private static final String TAG = HfstUtils.class.getSimpleName();
@@ -38,63 +43,7 @@ final public class HfstUtils {
         // Ensures the static initializer is called
     }
 
-    public static String metadataFilename(String locale) {
-        return locale + ".json";
-    }
-
-    public static String dictionaryFilename(String locale) {
-        return locale + ".zhfst";
-    }
-
-    public static File dictionaryPath(String locale) {
-        return mCtx.getFileStreamPath(dictionaryFilename(locale));
-    }
-
-    /*
-    private static File getSpellerCache() {
-        File spellerCache = new File(mCtx.getCacheDir(), "spellers");
-        spellerCache.mkdir();
-        return spellerCache;
-    }
-    */
-
-    // Copy a dictionary from the assets directory into the cache directory.
-    // Return the absolute path to the copied dictionary, as a string.
-    private static File extractSpellerFromAssets(String language) throws IOException {
-        Log.d(TAG, "language is " + language);
-        // Open the dictionary asset.
-        BufferedInputStream bis = new BufferedInputStream(mCtx.getAssets().open("dicts/" + language + ".zhfst"));
-        // Path for the copy of the dictionary in the cache directory.
-        File f = new File(mCtx.getCacheDir() + "/" + language + ".zhfst");
-
-        // Read the asset into a buffer.
-        byte[] buffer = new byte[bis.available()];
-        bis.read(buffer);
-        bis.close();
-
-        Log.d(TAG, "SPROUL: byte buffer size is: " + Integer.toString(buffer.length));
-
-        // Write the buffer to the output file.
-        FileOutputStream fos = new FileOutputStream(f);
-        fos.write(buffer);
-        fos.close();
-
-        assert f.isFile();
-
-        return f;
-    }
-
-    public static boolean spellerExists(String language) {
-        try {
-            mCtx.getAssets().open("dicts/" + language + ".zhfst").close();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    // FIXME: We could do better than this by integrating with the Context, settings and junk.
-    public static boolean compatibleWithLocale(String locale) {
+    public static boolean isBundled(String locale) {
         switch (locale) {
             case "se":
             case "zz_SJD":
@@ -102,6 +51,71 @@ final public class HfstUtils {
             default:
                 return false;
         }
+    }
+
+    public static String metadataFilename(String locale) {
+        return locale + "_metadata.json";
+    }
+
+    public static String dictionaryFilename(String locale) {
+        return locale + ".zhfst";
+    }
+
+    public static File dictionaryFile(String locale) {
+        return mCtx.getFileStreamPath(dictionaryFilename(locale));
+    }
+
+    public static File metadataFile(String locale) {
+        return mCtx.getFileStreamPath(metadataFilename(locale));
+    }
+
+    public static AssetFileDescriptor bundledDictionary(String locale) {
+        return mCtx.getAssets().open("dicts/" + dictionaryFilename(locale));
+    }
+
+    public static AssetFileDescriptor bundledMetadata(String locale) {
+        return mCtx.getAssets().open("dicts/" + metadataFilename(locale));
+    }
+
+    public static void copyAssetToFile(AssetFileDescriptor src, File dest) throws IOException {
+        FileInputStream inputStream = src.createInputStream();
+        FileOutputStream outputStream = new FileOutputStream(dest);
+
+        FileChannel input = src.createInputStream().getChannel();
+        FileChannel output = outputStream.getChannel();
+
+        input.transferTo(0, input.size(), output);
+
+        inputStream.close();
+        outputStream.close();
+    }
+
+    // Copy the fallback dictionary and metadata for a given locale to the main dictionary directory.
+    // Return the installed dictionary file, or null if no bundled dictionary was available.
+    @Nullable
+    private static boolean installBundled(String locale) {
+        if (!isBundled(locale)) {
+            Log.w(TAG, "Unable to locate a bundled dictionary for locale: " + locale);
+            return null;
+        }
+        File bundledDict = dictionaryFile(locale);
+        try {
+            copyAssetToFile(bundledMetadata(locale), metadataFile(locale));
+            copyAssetToFile(bundledDictionary(locale), bundledDict);
+        } catch (Exception e) {
+            Log.e(TAG, "IO exception when installing bundled dictionary for locale: " + e);
+            Log.e(TAG, "Exception: " + e.getMessage());
+            return null;
+        }
+        return bundledDict;
+    }
+
+    // Create an intent to have the dictionary for the given locale updated by the updater service.
+    public static Intent dictUpdateIntent(String locale) {
+        Intent intent = new Intent(mCtx, HfstDictionaryService);
+        intent.setAction(HfstUtils.ACTION_UPDATE_DICT);
+        intent.putExtra(HfstUtils.EXTRA_LOCALE_KEY, locale);
+        return intent;
     }
 
     private static ZHfstOspeller configure(ZHfstOspeller s) {
@@ -116,42 +130,21 @@ final public class HfstUtils {
     }
 
     @Nullable
-    public static ZHfstOspeller getSpeller(@Nonnull String language) {
-        // Directory path for the extracted version of this spell checker.
-        //File spellerDir = new File(getSpellerCache(), language);
+    public static ZHfstOspeller getSpeller(@Nonnull String locale) {
+        ZHfstOspeller zhfst = new ZHfstOspeller();
 
-        // If pre-cached, reuse.
-        /*
-        if (spellerDir.isDirectory()) {
-            File acceptor = new File(spellerDir, ACCEPTOR);
-            File errmodel = new File(spellerDir, ERRMODEL);
+        File dictFile = dictionaryFile(language);
 
-            if (acceptor.exists() && errmodel.exists()) {
-                Log.i(TAG, "Using cached speller for " + language);
-                return configure(new ZHfstOspeller(acceptor.getAbsolutePath(),
-                                                   errmodel.getAbsolutePath()));
+        // Try to fall back to a bundled dictionary if no regular dictionary exists.
+        if (!dictFile.exists()) {
+            zhfstFile = installBundled(locale);
+            mCtx.startService(dictUpdateIntent(locale));
+            if (zhfstFile == null) {
+                return null;
             }
         }
-        */
 
-        // Sans caching.
-        ZHfstOspeller zhfst = new ZHfstOspeller();
-        // zhfst.setTemporaryDir(getSpellerCache().getAbsolutePath());
-
-        File zhfstFile = dictionaryPath(language);
-        Log.d(TAG, "SPROUL, path is: " + zhfstFile.getAbsolutePath());
-
-        if (!zhfstFile.exists()) {
-            Log.e(TAG, "SPROUL: zhfst file doesn't exist");
-            return null;
-        }
-
-        File tmpPath = new File(zhfst.readZhfst(zhfstFile.getAbsolutePath()));
-
-        // zhfstFile.delete();
-        // tmpPath.renameTo(spellerDir);
-
-        // Log.i(TAG, "Newly created cached language " + language);
+        zhfst.readZhfst(zhfstFile.getAbsolutePath());
 
         return configure(zhfst);
     }
