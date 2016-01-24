@@ -138,17 +138,15 @@ final public class HfstUtils {
         ZHfstOspeller zhfst = new ZHfstOspeller();
         // zhfst.setTemporaryDir(getSpellerCache().getAbsolutePath());
 
-        String zhfstPath = dictionaryPath(language);
+        File zhfstFile = dictionaryPath(language);
         Log.d(TAG, "SPROUL, path is: " + zhfstPath);
 
-        // Check that the file exists.
-        File f = new File(zhfstPath);
-        if (!f.exists()) {
+        if (!zhfstFile.exists()) {
             Log.e(TAG, "SPROUL: zhfst file doesn't exist");
             return null;
         }
 
-        File tmpPath = new File(zhfst.readZhfst(zhfstPath));
+        File tmpPath = new File(zhfst.readZhfst(zhfstFile.getAbsolutePath()));
 
         // zhfstFile.delete();
         // tmpPath.renameTo(spellerDir);

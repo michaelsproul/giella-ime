@@ -38,10 +38,13 @@ class HfstDictionaryService extends Service {
         Log.d(TAG, "SPROUL: byte buffer size is: " + Integer.toString(buffer.length));
 
         // Write the buffer to the output file.
-        FileOutputStream fileStream = mCtx.openFileOutput(HfstUtils.dictionaryName("se"), Context.MODE_PRIVATE);
+        FileOutputStream fileStream = mCtx.openFileOutput(HfstUtils.dictionaryFilename("se"), Context.MODE_PRIVATE);
         fileStream.write(buffer);
         fileStream.close();
 
         Log.d(TAG, "SPROUL: created the zhfst file in the app files directory");
     }
+
+    @Override
+    public void onBind() {}
 }
