@@ -47,5 +47,5 @@ class HfstDictionaryService extends Service {
     }
 
     @Override
-    public void onBind(Intent i) {}
+    public IBinder onBind(Intent i) { return null; }
 }
