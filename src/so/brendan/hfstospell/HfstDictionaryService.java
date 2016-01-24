@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.os.IBinder;
 
 import java.io.BufferedInputStream;
 import java.io.File;
