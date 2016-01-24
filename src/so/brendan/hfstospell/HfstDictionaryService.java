@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
 import so.brendan.hfstospell.HfstUtils;
 
 class HfstDictionaryService extends Service {
-    private static final TAG = this.class.getSimpleName();
+    private static final String TAG = HfstDictionaryService.class.getSimpleName();
     private Context mCtx;
 
     @Override
