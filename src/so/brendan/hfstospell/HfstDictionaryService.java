@@ -31,6 +31,10 @@ class HfstDictionaryService extends IntentService {
     // Key name for passing the locale in an intent.
     public static final String EXTRA_LOCALE_KEY = PACKAGE_NAME + ".Locale";
 
+    public HfstDictionaryService() {
+        super("HFST Dictionary Service");
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
