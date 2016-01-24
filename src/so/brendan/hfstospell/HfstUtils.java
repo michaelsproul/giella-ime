@@ -135,7 +135,7 @@ final public class HfstUtils {
     public static ZHfstOspeller getSpeller(@Nonnull String locale) {
         ZHfstOspeller zhfst = new ZHfstOspeller();
 
-        File dictFile = dictionaryFile(language);
+        File dictFile = dictionaryFile(locale);
 
         // Try to fall back to a bundled dictionary if no regular dictionary exists.
         if (!dictFile.exists()) {
