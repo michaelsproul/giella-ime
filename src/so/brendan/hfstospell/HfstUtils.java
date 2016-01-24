@@ -1,16 +1,18 @@
 package so.brendan.hfstospell;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.util.Log;
 
-import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.Locale;
 
-import java.nio.channels.FileChannel;
+
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -70,11 +72,11 @@ final public class HfstUtils {
     }
 
     public static AssetFileDescriptor bundledDictionary(String locale) {
-        return mCtx.getAssets().open("dicts/" + dictionaryFilename(locale));
+        return mCtx.getAssets().openFd("dicts/" + dictionaryFilename(locale));
     }
 
     public static AssetFileDescriptor bundledMetadata(String locale) {
-        return mCtx.getAssets().open("dicts/" + metadataFilename(locale));
+        return mCtx.getAssets().openFd("dicts/" + metadataFilename(locale));
     }
 
     public static void copyAssetToFile(AssetFileDescriptor src, File dest) throws IOException {
@@ -93,7 +95,7 @@ final public class HfstUtils {
     // Copy the fallback dictionary and metadata for a given locale to the main dictionary directory.
     // Return the installed dictionary file, or null if no bundled dictionary was available.
     @Nullable
-    private static boolean installBundled(String locale) {
+    private static File installBundled(String locale) {
         if (!isBundled(locale)) {
             Log.w(TAG, "Unable to locate a bundled dictionary for locale: " + locale);
             return null;
@@ -112,9 +114,9 @@ final public class HfstUtils {
 
     // Create an intent to have the dictionary for the given locale updated by the updater service.
     public static Intent dictUpdateIntent(String locale) {
-        Intent intent = new Intent(mCtx, HfstDictionaryService);
-        intent.setAction(HfstUtils.ACTION_UPDATE_DICT);
-        intent.putExtra(HfstUtils.EXTRA_LOCALE_KEY, locale);
+        Intent intent = new Intent(mCtx, HfstDictionaryService.class);
+        intent.setAction(HfstDictionaryService.ACTION_UPDATE_DICT);
+        intent.putExtra(HfstDictionaryService.EXTRA_LOCALE_KEY, locale);
         return intent;
     }
 
@@ -137,14 +139,14 @@ final public class HfstUtils {
 
         // Try to fall back to a bundled dictionary if no regular dictionary exists.
         if (!dictFile.exists()) {
-            zhfstFile = installBundled(locale);
+            dictFile = installBundled(locale);
             mCtx.startService(dictUpdateIntent(locale));
-            if (zhfstFile == null) {
+            if (dictFile == null) {
                 return null;
             }
         }
 
-        zhfst.readZhfst(zhfstFile.getAbsolutePath());
+        zhfst.readZhfst(dictFile.getAbsolutePath());
 
         return configure(zhfst);
     }
