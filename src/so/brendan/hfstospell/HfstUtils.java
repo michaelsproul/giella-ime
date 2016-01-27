@@ -85,7 +85,7 @@ final public class HfstUtils {
     /// FIXME: There doesn't seem to be a better way to do this with Android.
     /// Can't use java.nio.file.Files, or AssetManager.openFd (because of compressed assets).
     public static void copyAssetToFile(InputStream src, File dest) throws IOException {
-        BufferedInputStream bis = new BufferedInputStream(src));
+        BufferedInputStream bis = new BufferedInputStream(src);
         byte[] buffer = new byte[bis.available()];
         bis.read(buffer);
         bis.close();
