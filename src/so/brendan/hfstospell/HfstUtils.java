@@ -15,6 +15,7 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.Channels;
 import java.nio.file.Files;
 import java.util.Locale;
+import java.io.BufferedInputStream;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
