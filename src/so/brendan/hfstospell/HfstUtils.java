@@ -81,19 +81,16 @@ final public class HfstUtils {
         return mCtx.getAssets().open("dicts/" + metadataFilename(locale));
     }
 
+    /// FIXME: There doesn't seem to be a better way to do this with Android.
+    /// Can't use java.nio.file.Files, or AssetManager.openFd (because of compressed assets).
     public static void copyAssetToFile(InputStream src, File dest) throws IOException {
-        Files.copy(src, dest.toPath());
-        /*
-        FileOutputStream outputStream = new FileOutputStream(dest);
-
-        Channel input = Channels.newChannel(src);
-        FileChannel output = outputStream.getChannel();
-
-        input.transferTo(0, input.size(), output);
-
-        inputStream.close();
-        outputStream.close();
-        */
+        BufferedInputStream bis = new BufferedInputStream(src));
+        byte[] buffer = new byte[bis.available()];
+        bis.read(buffer);
+        bis.close();
+        FileOutputStream fos = new FileOutputStream(dest);
+        fos.write(buffer);
+        fos.close();
     }
 
     // Copy the fallback dictionary and metadata for a given locale to the main dictionary directory.
