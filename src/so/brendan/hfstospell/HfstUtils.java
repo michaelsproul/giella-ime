@@ -71,11 +71,11 @@ final public class HfstUtils {
         return mCtx.getFileStreamPath(metadataFilename(locale));
     }
 
-    public static AssetFileDescriptor bundledDictionary(String locale) {
+    public static AssetFileDescriptor bundledDictionary(String locale) throws IOException {
         return mCtx.getAssets().openFd("dicts/" + dictionaryFilename(locale));
     }
 
-    public static AssetFileDescriptor bundledMetadata(String locale) {
+    public static AssetFileDescriptor bundledMetadata(String locale) throws IOException {
         return mCtx.getAssets().openFd("dicts/" + metadataFilename(locale));
     }
 
