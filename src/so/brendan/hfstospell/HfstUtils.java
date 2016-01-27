@@ -26,6 +26,7 @@ import so.brendan.hfstospell.HfstDictionaryService;
 final public class HfstUtils {
     private static final String TAG = HfstUtils.class.getSimpleName();
     private static Context mCtx;
+    private static Object mLock = new Object();
 
     private static final String ACCEPTOR = "acceptor.default.hfst";
     private static final String ERRMODEL = "errmodel.default.hfst";
@@ -134,21 +135,23 @@ final public class HfstUtils {
 
     @Nullable
     public static synchronized ZHfstOspeller getSpeller(@Nonnull String locale) {
-        ZHfstOspeller zhfst = new ZHfstOspeller();
+        synchronized (mLock) {
+            ZHfstOspeller zhfst = new ZHfstOspeller();
 
-        File dictFile = dictionaryFile(locale);
+            File dictFile = dictionaryFile(locale);
 
-        // Try to fall back to a bundled dictionary if no regular dictionary exists.
-        if (!dictFile.exists()) {
-            dictFile = installBundled(locale);
-            mCtx.startService(dictUpdateIntent(locale));
-            if (dictFile == null) {
-                return null;
+            // Try to fall back to a bundled dictionary if no regular dictionary exists.
+            if (!dictFile.exists()) {
+                dictFile = installBundled(locale);
+                mCtx.startService(dictUpdateIntent(locale));
+                if (dictFile == null) {
+                    return null;
+                }
             }
+
+            zhfst.readZhfst(dictFile.getAbsolutePath());
+
+            return configure(zhfst);
         }
-
-        zhfst.readZhfst(dictFile.getAbsolutePath());
-
-        return configure(zhfst);
     }
 }
