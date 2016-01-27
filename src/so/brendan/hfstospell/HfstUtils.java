@@ -13,9 +13,8 @@ import java.io.InputStream;
 import java.nio.channels.Channel;
 import java.nio.channels.FileChannel;
 import java.nio.channels.Channels;
+import java.nio.file.Files;
 import java.util.Locale;
-
-
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -83,6 +82,8 @@ final public class HfstUtils {
     }
 
     public static void copyAssetToFile(InputStream src, File dest) throws IOException {
+        Files.copy(src, dest.toPath());
+        /*
         FileOutputStream outputStream = new FileOutputStream(dest);
 
         Channel input = Channels.newChannel(src);
@@ -92,6 +93,7 @@ final public class HfstUtils {
 
         inputStream.close();
         outputStream.close();
+        */
     }
 
     // Copy the fallback dictionary and metadata for a given locale to the main dictionary directory.
