@@ -9,7 +9,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.channels.Channel;
 import java.nio.channels.FileChannel;
+import java.nio.channels.Channels;
 import java.util.Locale;
 
 
@@ -71,19 +74,18 @@ final public class HfstUtils {
         return mCtx.getFileStreamPath(metadataFilename(locale));
     }
 
-    public static AssetFileDescriptor bundledDictionary(String locale) throws IOException {
-        return mCtx.getAssets().openFd("dicts/" + dictionaryFilename(locale));
+    public static InputStream bundledDictionary(String locale) throws IOException {
+        return mCtx.getAssets().open("dicts/" + dictionaryFilename(locale));
     }
 
-    public static AssetFileDescriptor bundledMetadata(String locale) throws IOException {
-        return mCtx.getAssets().openFd("dicts/" + metadataFilename(locale));
+    public static InputStream bundledMetadata(String locale) throws IOException {
+        return mCtx.getAssets().open("dicts/" + metadataFilename(locale));
     }
 
-    public static void copyAssetToFile(AssetFileDescriptor src, File dest) throws IOException {
-        FileInputStream inputStream = src.createInputStream();
+    public static void copyAssetToFile(InputStream src, File dest) throws IOException {
         FileOutputStream outputStream = new FileOutputStream(dest);
 
-        FileChannel input = src.createInputStream().getChannel();
+        Channel input = Channels.newChannel(src);
         FileChannel output = outputStream.getChannel();
 
         input.transferTo(0, input.size(), output);
