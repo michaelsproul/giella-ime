@@ -33,6 +33,7 @@ class SpellerWrapper {
             public void onReceive(Context recCtx, Intent intent) {
                 // TODO: Check that returned locale matches here.
                 instantiateSpeller();
+                recCtx.unregisterReceiver(this);
             }
         };
         context.registerReceiver(receiver, filter);
@@ -47,6 +48,7 @@ class SpellerWrapper {
             return mSpeller;
         }
         // Otherwise, request one.
+        Log.d(TAG, "Sending INSTALL_DICT broadcast");
         mCtx.sendBroadcast(SpellerService.installDictIntent(mLocale));
         return null;
     }

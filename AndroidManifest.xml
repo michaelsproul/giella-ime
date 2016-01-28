@@ -182,8 +182,9 @@
             </intent-filter>
         </receiver>
 
-        <!-- Our Broadcast receivers for installing dictionaries -->
-        <receiver android:name="so.brendan.hfstospell.SpellerService">
+        <!-- Our Broadcast receiver for installing dictionaries -->
+        <receiver android:name="so.brendan.hfstospell.SpellerService"
+            android:process=":spellerservicething">
             <intent-filter>
                 <action android:name="so.brendan.hfstospell.SpellerService.ACTION_INSTALL_DICT" />
             </intent-filter>
