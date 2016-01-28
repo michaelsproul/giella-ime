@@ -136,13 +136,16 @@ final public class HfstUtils {
     @Nullable
     public static synchronized ZHfstOspeller getSpeller(@Nonnull String locale) {
         synchronized (mLock) {
+            Log.d("NIGHTMARE", "Greetings, I am entering the critical section. " + mLock.hashCode());
             ZHfstOspeller zhfst = new ZHfstOspeller();
 
             File dictFile = dictionaryFile(locale);
 
             // Try to fall back to a bundled dictionary if no regular dictionary exists.
             if (!dictFile.exists()) {
+                Log.d("NIGHTMARE", "Dict doesn't exist, trying to install bundled");
                 dictFile = installBundled(locale);
+                Log.d("NIGHTMARE", "Installed bundled");
                 mCtx.startService(dictUpdateIntent(locale));
                 if (dictFile == null) {
                     return null;
