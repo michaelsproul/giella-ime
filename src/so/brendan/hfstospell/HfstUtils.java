@@ -94,7 +94,7 @@ final public class HfstUtils {
         fos.close();
     }
 
-    private static ZHfstOspeller configure(ZHfstOspeller s) {
+    public static ZHfstOspeller configure(ZHfstOspeller s) {
         s.setQueueLimit(3);
         s.setWeightLimit(50);
         return s;
