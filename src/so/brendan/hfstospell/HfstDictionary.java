@@ -20,7 +20,7 @@ import so.brendan.hfstospell.SpellerWrapper;
 
 public class HfstDictionary extends Dictionary {
 
-    public static final TAG = HfstDictionary.class.getSimpleName();
+    public static final String TAG = HfstDictionary.class.getSimpleName();
 
     private SpellerWrapper mSpeller;
 
