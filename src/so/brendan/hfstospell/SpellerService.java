@@ -77,6 +77,7 @@ class SpellerService extends BroadcastReceiver {
                     Log.e(TAG, "Exception: " + e.getMessage());
                     return;
                 }
+                Log.d(TAG, "Sending DICT_INSTALLED broadcast");
                 context.sendBroadcast(dictInstalledIntent(locale));
             default:
                 return;

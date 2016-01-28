@@ -32,6 +32,7 @@ class SpellerWrapper {
             @Override
             public void onReceive(Context recCtx, Intent intent) {
                 // TODO: Check that returned locale matches here.
+                Log.d(TAG, "Received DICT_INSTALLED broadcast");
                 instantiateSpeller();
                 recCtx.unregisterReceiver(this);
             }
