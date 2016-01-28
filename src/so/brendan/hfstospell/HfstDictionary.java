@@ -7,6 +7,8 @@ import com.android.inputmethod.latin.SuggestedWords.SuggestedWordInfo;
 import com.android.inputmethod.latin.common.ComposedData;
 import com.android.inputmethod.latin.settings.SettingsValuesForSuggestion;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -27,7 +29,7 @@ public class HfstDictionary extends Dictionary {
     public HfstDictionary(Context context, String dictType, Locale locale) {
         super(dictType, locale);
 
-        mSpeller = new SpellerWrapper(context, locale);
+        mSpeller = new SpellerWrapper(context, locale.toString());
     }
 
     public HfstDictionary(Context context, Locale locale) {
@@ -72,7 +74,7 @@ public class HfstDictionary extends Dictionary {
         if (speller == null) {
             return true;
         } else {
-            return mSpeller.spell(word);
+            return speller.spell(word);
         }
     }
 }

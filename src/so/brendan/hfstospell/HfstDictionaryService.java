@@ -52,9 +52,5 @@ class HfstDictionaryService extends IntentService {
         }
     }
 
-    private void handleUpdateDict(Intent intent) {
-
-
-        Log.d(TAG, "Hello! Locale is: " + locale);
-    }
+    private void handleUpdateDict(Intent intent) {}
 }

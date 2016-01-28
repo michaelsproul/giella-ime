@@ -44,7 +44,7 @@ class SpellerService extends BroadcastReceiver {
 
     // Copy the fallback dictionary and metadata for a given locale to the main dictionary directory.
     // Return the installed dictionary file, or null if no bundled dictionary was available.
-    private static void installBundled(@NonNull String locale) throws Exception {
+    private static void installBundled(@Nonnull String locale) throws Exception {
         // If the file already exists, then it must have been put there by us so there's
         // no need to install a new one.
         File dictPath = HfstUtils.dictionaryFile(locale);
@@ -53,7 +53,7 @@ class SpellerService extends BroadcastReceiver {
         }
 
         if (!HfstUtils.isBundled(locale)) {
-            throw Exception("Not a bundled locale");
+            throw new Exception("Not a bundled locale");
         }
 
         HfstUtils.copyAssetToFile(HfstUtils.bundledMetadata(locale), HfstUtils.metadataFile(locale));
@@ -73,8 +73,8 @@ class SpellerService extends BroadcastReceiver {
                 try {
                     installBundled(locale);
                 } catch (Exception e) {
-                    Log.e("Unable to install bundled dictionary for locale: " + locale);
-                    Log.e("Exception: " + e.getMessage());
+                    Log.e(TAG, "Unable to install bundled dictionary for locale: " + locale);
+                    Log.e(TAG, "Exception: " + e.getMessage());
                     return;
                 }
                 context.sendBroadcast(dictInstalledIntent(locale));

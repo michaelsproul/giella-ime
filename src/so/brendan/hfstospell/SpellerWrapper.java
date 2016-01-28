@@ -4,7 +4,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.util.Log;
 
+import java.io.File;
 import java.lang.Override;
 
 import fi.helsinki.hfst.ZHfstOspeller;
@@ -53,9 +55,9 @@ class SpellerWrapper {
     private void instantiateSpeller() {
         Log.d(TAG, "Instantiating the speller, hooray!");
         ZHfstOspeller speller = new ZHfstOspeller();
-        File dictFile = HfstUtils.dictionaryFile(locale);
+        File dictFile = HfstUtils.dictionaryFile(mLocale);
         speller.readZhfst(dictFile.getAbsolutePath());
-        mSpeller = HfstUtils.configure(zhfst);
+        mSpeller = HfstUtils.configure(speller);
         Log.d(TAG, "Done instantiating!");
     }
 }
