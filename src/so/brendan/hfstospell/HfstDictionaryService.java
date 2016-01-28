@@ -53,11 +53,7 @@ class HfstDictionaryService extends IntentService {
     }
 
     private void handleUpdateDict(Intent intent) {
-        Bundle intentExtras = intent.getExtras();
-        String locale = intentExtras == null ? null : intentExtras.getString(EXTRA_LOCALE_KEY);
-        if (locale == null) {
-            Log.e(TAG, "No locale in dict update request");
-        }
+
 
         Log.d(TAG, "Hello! Locale is: " + locale);
     }

@@ -74,9 +74,11 @@
         </service>
 
         <!-- HFST update service -->
+        <!--
         <service android:name="so.brendan.hfstospell.HfstDictionaryService"
             android:label="Bullshit">
         </service>
+        -->
 
         <service android:name="com.android.inputmethod.dictionarypack.DictionaryService"
                 android:label="@string/dictionary_service_name">
@@ -177,6 +179,13 @@
         <receiver android:name="com.android.inputmethod.latin.accounts.AccountsChangedReceiver">
             <intent-filter>
                 <action android:name="android.accounts.LOGIN_ACCOUNTS_CHANGED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Our Broadcast receivers for installing dictionaries -->
+        <receiver android:name="so.brendan.hfstospell.SpellerService">
+            <intent-filter>
+                <action android:name="so.brendan.hfstospell.SpellerService.ACTION_INSTALL_DICT" />
             </intent-filter>
         </receiver>
 

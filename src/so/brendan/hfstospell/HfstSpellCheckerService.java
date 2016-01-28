@@ -32,7 +32,7 @@ import fi.helsinki.hfst.StringWeightPair;
 import fi.helsinki.hfst.StringWeightPairVector;
 import fi.helsinki.hfst.ZHfstOspeller;
 
-import so.brendan.hfstospell.HfstUtils;
+import so.brendan.hfstospell.SpellerWrapper;
 
 /**
  * Service for spell checking, using HFST dictionaries.
@@ -40,7 +40,7 @@ import so.brendan.hfstospell.HfstUtils;
 public final class HfstSpellCheckerService extends SpellCheckerService {
     private static final String TAG = HfstSpellCheckerService.class.getSimpleName();
 
-    private ZHfstOspeller mSpeller;
+    private SpellerWrapper mSpeller;
 
     public HfstSpellCheckerService() {
         super();
@@ -57,7 +57,7 @@ public final class HfstSpellCheckerService extends SpellCheckerService {
         HfstUtils.init(this);
 
         // FIXME: get rid of hardcoded locale here
-        mSpeller = HfstUtils.getSpeller("se");
+        mSpeller = new SpellerWrapper(this, "se");
 
         Log.d(TAG, "SPROUL: just created a spell checker");
     }
@@ -68,9 +68,9 @@ public final class HfstSpellCheckerService extends SpellCheckerService {
     }
 
     private class HfstSpellCheckerSession extends Session {
-        private final ZHfstOspeller mSpeller;
+        private final SpellerWrapper mSpeller;
 
-        private HfstSpellCheckerSession(ZHfstOspeller speller) {
+        private HfstSpellCheckerSession(SpellerWrapper speller) {
             mSpeller = speller;
         }
 
@@ -79,18 +79,26 @@ public final class HfstSpellCheckerService extends SpellCheckerService {
 
         @Override
         public SuggestionsInfo onGetSuggestions(TextInfo textInfo, int suggestionsLimit) {
+            // If the speller isn't ready, return an empty list and an OK message.
+            ZHfstOspeller speller = mSpeller.getSpeller();
+            if (speller == null) {
+                String[] empty = new String[0];
+                return new SuggestionsInfo(SuggestionsInfo.RESULT_ATTR_IN_THE_DICTIONARY, empty);
+            }
+
+            // If the speller IS ready, do the proper thing.
             String word = textInfo.getText();
 
             Log.d(TAG, "SPROUL: calling C++ spell checker");
 
             // Check if the word is spelled correctly.
-            if (mSpeller.spell(word)) {
+            if (speller.spell(word)) {
                 Log.d(TAG, "SPROUL: Word spelled correctly: " + word );
                 return new SuggestionsInfo(SuggestionsInfo.RESULT_ATTR_IN_THE_DICTIONARY, new String[0]);
             }
 
             // If the word isn't correct, query the C++ spell checker for suggestions.
-            StringWeightPairVector suggs = mSpeller.suggest(word);
+            StringWeightPairVector suggs = speller.suggest(word);
             Log.d(TAG, "SPROUL: Word spelled incorrectly: " + word + ", num suggestions: " + Long.toString(suggs.size()));
             String[] suggestions = new String[(int) suggs.size()];
 

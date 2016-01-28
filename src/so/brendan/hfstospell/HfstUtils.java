@@ -94,67 +94,9 @@ final public class HfstUtils {
         fos.close();
     }
 
-    // Copy the fallback dictionary and metadata for a given locale to the main dictionary directory.
-    // Return the installed dictionary file, or null if no bundled dictionary was available.
-    @Nullable
-    private static File installBundled(String locale) {
-        if (!isBundled(locale)) {
-            Log.w(TAG, "Unable to locate a bundled dictionary for locale: " + locale);
-            return null;
-        }
-        File bundledDict = dictionaryFile(locale);
-        try {
-            copyAssetToFile(bundledMetadata(locale), metadataFile(locale));
-            copyAssetToFile(bundledDictionary(locale), bundledDict);
-        } catch (Exception e) {
-            Log.e(TAG, "IO exception when installing bundled dictionary for locale: " + e);
-            Log.e(TAG, "Exception: " + e.getMessage());
-            return null;
-        }
-        return bundledDict;
-    }
-
-    // Create an intent to have the dictionary for the given locale updated by the updater service.
-    public static Intent dictUpdateIntent(String locale) {
-        Intent intent = new Intent(mCtx, HfstDictionaryService.class);
-        intent.setAction(HfstDictionaryService.ACTION_UPDATE_DICT);
-        intent.putExtra(HfstDictionaryService.EXTRA_LOCALE_KEY, locale);
-        return intent;
-    }
-
     private static ZHfstOspeller configure(ZHfstOspeller s) {
         s.setQueueLimit(3);
         s.setWeightLimit(50);
         return s;
-    }
-
-    @Nullable
-    public static ZHfstOspeller getSpeller(@Nonnull Locale locale) {
-        return getSpeller(locale.getLanguage());
-    }
-
-    @Nullable
-    public static synchronized ZHfstOspeller getSpeller(@Nonnull String locale) {
-        synchronized (mLock) {
-            Log.d("NIGHTMARE", "Greetings, I am entering the critical section. " + mLock.hashCode());
-            ZHfstOspeller zhfst = new ZHfstOspeller();
-
-            File dictFile = dictionaryFile(locale);
-
-            // Try to fall back to a bundled dictionary if no regular dictionary exists.
-            if (!dictFile.exists()) {
-                Log.d("NIGHTMARE", "Dict doesn't exist, trying to install bundled");
-                dictFile = installBundled(locale);
-                Log.d("NIGHTMARE", "Installed bundled");
-                mCtx.startService(dictUpdateIntent(locale));
-                if (dictFile == null) {
-                    return null;
-                }
-            }
-
-            zhfst.readZhfst(dictFile.getAbsolutePath());
-
-            return configure(zhfst);
-        }
     }
 }
