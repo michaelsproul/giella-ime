@@ -37,14 +37,7 @@ public class SpellerService extends IntentService {
         super(PACKAGE_NAME + "SpellerService");
     }
 
-    @Nullable
-    private static String extractLocale(Intent intent) {
-        Bundle intentExtras = intent.getExtras();
-        if (intentExtras == null) {
-            return null;
-        }
-        return intentExtras.getString(EXTRA_LOCALE_KEY);
-    }
+
 
     // Copy the fallback dictionary and metadata for a given locale to the main dictionary directory.
     // Return the installed dictionary file, or null if no bundled dictionary was available.
@@ -69,7 +62,7 @@ public class SpellerService extends IntentService {
         Log.d(TAG, "RECEIVED INTENT");
         switch (intent.getAction()) {
             case ACTION_INSTALL_DICT:
-                String locale = extractLocale(intent);
+                String locale = intent.getStringExtra(EXTRA_LOCALE_KEY);
                 if (locale == null) {
                     Log.e(TAG, "No locale in install dict request");
                     return;
