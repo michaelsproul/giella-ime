@@ -33,7 +33,9 @@ class SpellerService extends IntentService {
     // Key name for passing the locale in an intent.
     public static final String EXTRA_LOCALE_KEY = PACKAGE_NAME + ".Locale";
 
-    public SpellerService() {}
+    public SpellerService() {
+        super(PACKAGE_NAME + "SpellerService");
+    }
 
     @Nullable
     private static String extractLocale(Intent intent) {
@@ -81,7 +83,7 @@ class SpellerService extends IntentService {
                     return;
                 }
                 Log.d(TAG, "Sending DICT_INSTALLED broadcast");
-                context.sendBroadcast(dictInstalledIntent(locale));
+                sendBroadcast(dictInstalledIntent(locale));
             default:
                 return;
         }
@@ -94,19 +96,12 @@ class SpellerService extends IntentService {
 
     // Create an intent to broadcast that a dictionary for the given locale needs to be installed.
     public static Intent installDictIntent(String locale) {
-        Intent intent = intentWithLocale(ACTION_INSTALL_DICT, locale);
-        intent.setClass(this, this.getClass());
-        return intent;
+        return intentWithLocale(ACTION_INSTALL_DICT, locale);
     }
 
     private static Intent intentWithLocale(String action, String locale) {
         Intent intent = new Intent(action);
         intent.putExtra(HfstDictionaryService.EXTRA_LOCALE_KEY, locale);
         return intent;
-    }
-
-    @Override
-    public IBinder peekService(Context myContext, Intent service) {
-        return super.peekService(myContext, service);
     }
 }

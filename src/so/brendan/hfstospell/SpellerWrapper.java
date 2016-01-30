@@ -50,8 +50,14 @@ class SpellerWrapper {
         }
         // Otherwise, request one.
         Log.d(TAG, "Sending INSTALL_DICT broadcast");
-        mCtx.startService(SpellerService.installDictIntent(mLocale));
+        mCtx.startService(requestDictIntent(mLocale));
         return null;
+    }
+
+    public requestDictIntent(String locale) {
+        Intent intent = SpellerService.installDictIntent(mLocale);
+        intent.setClass(mCtx, SpellerService.class);
+        return intent;
     }
 
     // Upon receiving word that it is safe to do so, load the speller file from its location.
