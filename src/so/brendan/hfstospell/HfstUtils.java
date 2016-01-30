@@ -99,6 +99,4 @@ final public class HfstUtils {
         s.setWeightLimit(50);
         return s;
     }
-
-    public static void install
 }
