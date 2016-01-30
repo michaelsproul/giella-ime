@@ -54,7 +54,7 @@ class SpellerWrapper {
         return null;
     }
 
-    public requestDictIntent(String locale) {
+    public Intent requestDictIntent(String locale) {
         Intent intent = SpellerService.installDictIntent(mLocale);
         intent.setClass(mCtx, SpellerService.class);
         return intent;
