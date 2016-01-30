@@ -57,7 +57,10 @@ public class HfstDictionaryProvider extends ContentProvider {
 
         @Override
         public int getCount() {
+            /*
             return HfstUtils.spellerExists(name) ? 1 : 0;
+            */
+            return 1;
         }
 
         @Override
