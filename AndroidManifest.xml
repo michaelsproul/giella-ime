@@ -63,6 +63,7 @@
         -->
 
         <!-- HFST spell checker service -->
+        <!--
         <service android:name="so.brendan.hfstospell.HfstSpellCheckerService"
             android:label="Michael and Brendan's awesome shit"
             android:permission="android.permission.BIND_TEXT_SERVICE">
@@ -72,6 +73,7 @@
             <meta-data android:name="android.view.textservice.scs"
                 android:resource="@xml/spellchecker_hfst" />
         </service>
+        -->
 
         <!-- HFST update service -->
         <!--
