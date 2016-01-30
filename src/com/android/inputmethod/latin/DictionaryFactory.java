@@ -59,7 +59,7 @@ public final class DictionaryFactory {
         // Use an HFST dictionary if one exists for this locale.
         if (HfstUtils.isBundled(locale.toString())) {
             Log.d(TAG, "SPROUL: using an HFST dictionary");
-            dictList.add(new HfstDictionary(locale));
+            dictList.add(new HfstDictionary(context, locale));
         }
 
         final ArrayList<AssetFileAddress> assetFileList =
