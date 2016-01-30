@@ -20,7 +20,7 @@ import javax.annotation.Nullable;
 import so.brendan.hfstospell.HfstUtils;
 
 // This class handles synchronised speller related tasks on an isolated process.
-class SpellerService extends IntentService {
+public class SpellerService extends IntentService {
 
     private static final String TAG = SpellerService.class.getSimpleName();
 
