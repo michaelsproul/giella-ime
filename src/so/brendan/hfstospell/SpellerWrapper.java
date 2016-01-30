@@ -21,6 +21,19 @@ class SpellerWrapper {
     private Context mCtx;
     private String mLocale;
     private ZHfstOspeller mSpeller;
+    private BroadcastReceiver mReceiver;
+
+    private class Receiver extends BroadcastReceiver {
+        public Receiver() {}
+
+        @Override
+        public void onReceive(Context recCtx, Intent intent) {
+            // TODO: Check that returned locale matches here.
+            Log.d(TAG, "Received DICT_INSTALLED broadcast");
+            instantiateSpeller();
+            // recCtx.unregisterReceiver(this);
+        }
+    }
 
     public SpellerWrapper(Context context, String locale) {
         mCtx = context;
@@ -28,16 +41,8 @@ class SpellerWrapper {
 
         // Register the broadcast listener, listening for DICT_INSTALLED messages.
         IntentFilter filter = new IntentFilter(SpellerService.ACTION_DICT_INSTALLED);
-        BroadcastReceiver receiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context recCtx, Intent intent) {
-                // TODO: Check that returned locale matches here.
-                Log.d(TAG, "Received DICT_INSTALLED broadcast");
-                instantiateSpeller();
-                // recCtx.unregisterReceiver(this);
-            }
-        };
-        context.registerReceiver(receiver, filter);
+        mReceiver = new Receiver();
+        context.registerReceiver(mReceiver, filter);
 
         // Send an initial broadcast.
         getSpeller();
@@ -67,6 +72,7 @@ class SpellerWrapper {
         File dictFile = HfstUtils.dictionaryFile(mLocale);
         speller.readZhfst(dictFile.getAbsolutePath());
         mSpeller = HfstUtils.configure(speller);
+        mCtx.unregisterReceiver(mReceiver);
         Log.d(TAG, "Done instantiating!");
     }
 }
