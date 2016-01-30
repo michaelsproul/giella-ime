@@ -34,7 +34,7 @@ class SpellerWrapper {
                 // TODO: Check that returned locale matches here.
                 Log.d(TAG, "Received DICT_INSTALLED broadcast");
                 instantiateSpeller();
-                recCtx.unregisterReceiver(this);
+                // recCtx.unregisterReceiver(this);
             }
         };
         context.registerReceiver(receiver, filter);
@@ -50,7 +50,7 @@ class SpellerWrapper {
         }
         // Otherwise, request one.
         Log.d(TAG, "Sending INSTALL_DICT broadcast");
-        mCtx.sendBroadcast(SpellerService.installDictIntent(mLocale));
+        mCtx.startService(SpellerService.installDictIntent(mLocale));
         return null;
     }
 

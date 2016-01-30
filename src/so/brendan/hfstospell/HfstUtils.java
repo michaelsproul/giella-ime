@@ -82,7 +82,7 @@ final public class HfstUtils {
         return mCtx.getAssets().open("dicts/" + metadataFilename(locale));
     }
 
-    /// FIXME: There doesn't seem to be a better way to do this with Android.
+    /// XXX: There isn't a better way to do this with Android.
     /// Can't use java.nio.file.Files, or AssetManager.openFd (because of compressed assets).
     public static void copyAssetToFile(InputStream src, File dest) throws IOException {
         BufferedInputStream bis = new BufferedInputStream(src);
@@ -99,4 +99,6 @@ final public class HfstUtils {
         s.setWeightLimit(50);
         return s;
     }
+
+    public static void install
 }

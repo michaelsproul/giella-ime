@@ -79,6 +79,8 @@
             android:label="Bullshit">
         </service>
         -->
+        <service android:name="so.brendan.hfstospell.SpellerService">
+        </service>
 
         <service android:name="com.android.inputmethod.dictionarypack.DictionaryService"
                 android:label="@string/dictionary_service_name">
@@ -183,12 +185,13 @@
         </receiver>
 
         <!-- Our Broadcast receiver for installing dictionaries -->
-        <receiver android:name="so.brendan.hfstospell.SpellerService"
-            android:process=":spellerservicething">
+        <!--
+        <receiver android:name="so.brendan.hfstospell.SpellerService">
             <intent-filter>
                 <action android:name="so.brendan.hfstospell.SpellerService.ACTION_INSTALL_DICT" />
             </intent-filter>
         </receiver>
+        -->
 
         <!-- Content providers -->
         <provider android:name="com.android.inputmethod.dictionarypack.DictionaryProvider"

@@ -1,5 +1,7 @@
 package so.brendan.hfstospell;
 
+import android.app.IntentService;
+import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -18,7 +20,7 @@ import javax.annotation.Nullable;
 import so.brendan.hfstospell.HfstUtils;
 
 // This class handles synchronised speller related tasks on an isolated process.
-class SpellerService extends BroadcastReceiver {
+class SpellerService extends IntentService {
 
     private static final String TAG = SpellerService.class.getSimpleName();
 
@@ -61,7 +63,8 @@ class SpellerService extends BroadcastReceiver {
     }
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onHandleIntent(Intent intent) {
+        Log.d(TAG, "RECEIVED INTENT");
         switch (intent.getAction()) {
             case ACTION_INSTALL_DICT:
                 String locale = extractLocale(intent);
@@ -69,7 +72,7 @@ class SpellerService extends BroadcastReceiver {
                     Log.e(TAG, "No locale in install dict request");
                     return;
                 }
-                HfstUtils.init(context);
+                HfstUtils.init(this);
                 try {
                     installBundled(locale);
                 } catch (Exception e) {
@@ -91,7 +94,9 @@ class SpellerService extends BroadcastReceiver {
 
     // Create an intent to broadcast that a dictionary for the given locale needs to be installed.
     public static Intent installDictIntent(String locale) {
-        return intentWithLocale(ACTION_INSTALL_DICT, locale);
+        Intent intent = intentWithLocale(ACTION_INSTALL_DICT, locale);
+        intent.setClass(this, this.getClass());
+        return intent;
     }
 
     private static Intent intentWithLocale(String action, String locale) {
