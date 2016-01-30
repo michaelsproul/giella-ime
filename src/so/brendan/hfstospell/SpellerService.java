@@ -25,7 +25,7 @@ public class SpellerService extends IntentService {
     private static final String TAG = SpellerService.class.getSimpleName();
 
     // Actions understood by the speller service.
-    public static final String PACKAGE_NAME = this.getPackageName();
+    public static final String PACKAGE_NAME = "so.brendan.hfstospell";
     // Sent to this class to request dictionary installation.
     public static final String ACTION_INSTALL_DICT = PACKAGE_NAME + ".INSTALL_DICT";
     // Sent by this class to signal successful dictionary installation.
