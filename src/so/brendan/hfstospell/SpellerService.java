@@ -34,10 +34,8 @@ public class SpellerService extends IntentService {
     public static final String EXTRA_LOCALE_KEY = PACKAGE_NAME + ".Locale";
 
     public SpellerService() {
-        super(PACKAGE_NAME + "SpellerService");
+        super(PACKAGE_NAME + ".SpellerService");
     }
-
-
 
     // Copy the fallback dictionary and metadata for a given locale to the main dictionary directory.
     // Return the installed dictionary file, or null if no bundled dictionary was available.
@@ -62,12 +60,16 @@ public class SpellerService extends IntentService {
         Log.d(TAG, "RECEIVED INTENT");
         switch (intent.getAction()) {
             case ACTION_INSTALL_DICT:
+                Log.d(TAG, "SPROUL, bundle is " + intent.getExtras().toString());
                 String locale = intent.getStringExtra(EXTRA_LOCALE_KEY);
+
                 if (locale == null) {
                     Log.e(TAG, "No locale in install dict request");
                     return;
                 }
+
                 HfstUtils.init(this);
+
                 try {
                     installBundled(locale);
                 } catch (Exception e) {
@@ -75,6 +77,7 @@ public class SpellerService extends IntentService {
                     Log.e(TAG, "Exception: " + e.getMessage());
                     return;
                 }
+
                 Log.d(TAG, "Sending DICT_INSTALLED broadcast");
                 sendBroadcast(dictInstalledIntent(locale));
             default:
